@@ -211,15 +211,15 @@ fn ChipStruct() type {
             field_name[j] = std.ascii.toLower(char);
         }
         field_list[i] = std.builtin.Type.StructField{
-            .alignment = 1,
+            .alignment = @alignOf(MicroZig.Target),
             .name = field_name[0.. :0],
             .type = MicroZig.Target,
             .default_value = &target,
-            .is_comptime = true,
+            .is_comptime = false,
         };
     }
 
-    return @Type(.{
+    const return_type = @Type(.{
         .Struct = .{
             .layout = .auto,
             .fields = &field_list,
@@ -227,6 +227,7 @@ fn ChipStruct() type {
             .is_tuple = false,
         },
     });
+    return return_type;
 }
 
 pub const chips = ChipStruct();
