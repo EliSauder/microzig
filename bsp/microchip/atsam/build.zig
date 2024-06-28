@@ -11,29 +11,75 @@ fn root() []const u8 {
 
 const build_root = root();
 
+const listOfChips = [_][]const u8{
+    "ATSAMD21E15A.svd",
+    "ATSAMD21E15L.svd",
+    "ATSAMD21E16CU.svd",
+    "ATSAMD21E17DU.svd",
+    "ATSAMD21G15B.svd",
+    "ATSAMD21G16L.svd",
+    "ATSAMD21G17L.svd",
+    "ATSAMD21J15B.svd",
+    "ATSAMD21J17D.svd",
+    "ATSAMD21E15B.svd",
+    "ATSAMD21E16A.svd",
+    "ATSAMD21E16L.svd",
+    "ATSAMD21E17L.svd",
+    "ATSAMD21G15L.svd",
+    "ATSAMD21G17A.svd",
+    "ATSAMD21G18A.svd",
+    "ATSAMD21J16A.svd",
+    "ATSAMD21J18A.svd",
+    "ATSAMD21E15BU.svd",
+    "ATSAMD21E16B.svd",
+    "ATSAMD21E17A.svd",
+    "ATSAMD21E18A.svd",
+    "ATSAMD21G16A.svd",
+    "ATSAMD21G17AU.svd",
+    "ATSAMD21G18AU.svd",
+    "ATSAMD21J16B.svd",
+    "ATSAMD51J19A.atdf",
+    "ATSAMD21E15CU.svd",
+    "ATSAMD21E16BU.svd",
+    "ATSAMD21E17D.svd",
+    "ATSAMD21G15A.svd",
+    "ATSAMD21G16B.svd",
+    "ATSAMD21G17D.svd",
+    "ATSAMD21J15A.svd",
+    "ATSAMD21J17A.svd",
+};
+
 const samd21_15_base = MicroZig.Chip{
-    .cpu = MicroZig.cpus.cortex.cortex_m0plus,
+    .name = "",
+    .cpu = MicroZig.cpus.cortex_m0plus,
+    .register_definition = .{ .svd = .{ .path = "" } },
     .memory_regions = &.{
         .{ .kind = .flash, .offset = 0x00000000, .length = 32 * 1024 }, // Embedded Flash
         .{ .kind = .ram, .offset = 0x20000000, .length = 4 * 1024 }, // Embedded SRAM
     },
 };
 const samd21_16_base = MicroZig.Chip{
-    .cpu = MicroZig.cpus.cortex.cortex_m0plus,
+    .name = "",
+    .cpu = MicroZig.cpus.cortex_m0plus,
+    .register_definition = .{ .svd = .{ .path = "" } },
     .memory_regions = &.{
         .{ .kind = .flash, .offset = 0x00000000, .length = 64 * 1024 }, // Embedded Flash
         .{ .kind = .ram, .offset = 0x20000000, .length = 8 * 1024 }, // Embedded SRAM
     },
 };
 const samd21_17_base = MicroZig.Chip{
-    .cpu = MicroZig.cpus.cortex.cortex_m0plus,
+    .name = "",
+    .cpu = MicroZig.cpus.cortex_m0plus,
+    .register_definition = .{ .svd = .{ .path = "" } },
     .memory_regions = &.{
         .{ .kind = .flash, .offset = 0x00000000, .length = 128 * 1024 }, // Embedded Flash
         .{ .kind = .ram, .offset = 0x20000000, .length = 16 * 1024 }, // Embedded SRAM
     },
 };
 const samd21_18_base = MicroZig.Chip{
-    .cpu = MicroZig.cpus.cortex.cortex_m0plus,
+    .name = "",
+    .cpu = MicroZig.cpus.cortex_m0plus,
+    .register_definition = .{ .svd = .{ .path = "" } },
     .memory_regions = &.{
         .{ .kind = .flash, .offset = 0x00000000, .length = 256 * 1024 }, // Embedded Flash
         .{ .kind = .ram, .offset = 0x20000000, .length = 32 * 1024 }, // Embedded SRAM
@@ -41,32 +87,52 @@ const samd21_18_base = MicroZig.Chip{
 };
 
 fn updateStruct(base: MicroZig.Chip, per_chip_value: MicroZig.Chip) MicroZig.Chip {
-    per_chip_value.cpu = base.cpu;
-    per_chip_value.memory_regions = base.memory_regions;
-    return per_chip_value;
+    return MicroZig.Chip{
+        .name = per_chip_value.name,
+        .url = per_chip_value.url,
+        .cpu = base.cpu,
+        .memory_regions = base.memory_regions,
+        .register_definition = per_chip_value.register_definition,
+    };
 }
 
+fn getChipNames() []const []const u8 {
+    return listOfChips[0..];
+}
+
+// fn getChipNames() [][]const u8 {
+//     var chip_list = std.ArrayList([]const u8).init(std.heap.c_allocator);
+//     defer chip_list.deinit();
+//
+//     var dir = try std.fs.openDirAbsolute(build_root ++ "/src/chips/", .{ .iterate = true });
+//     var it = dir.iterate();
+//     while (try it.next()) |file| {
+//            if (file.kind != .File) {
+//                continue;
+//            }
+//         try chip_list.append(file.name);
+//     }
+//
+//     return chip_list.toOwnedSlice();
+// }
+
 fn getChips() []MicroZig.Target {
-    var chip_list = std.ArrayList(MicroZig.Target).init(std.heap.c_allocator);
-    defer chip_list.deinit();
+    const chip_names = getChipNames();
+    var chip_list: [chip_names.len]MicroZig.Target = undefined;
 
-    var dir = try std.fs.openDirAbsolute(build_root ++ "/src/chips/", .{ .iterate = true });
-    var it = dir.iterate();
-
-    while (try it.next()) |file| {
-        if (file.kind != .File) {
+    var counter = 0;
+    for (chip_names) |file| {
+        @setEvalBranchQuota(100_000);
+        if (!std.mem.startsWith(u8, file, "ATSAMD21")) {
             continue;
         }
-        if (!std.mem.startsWith(u8, file.name, "ATSAMD21")) {
-            continue;
-        }
-        if (!std.mem.endsWith(u8, file.name, ".svd")) {
+        if (!std.mem.endsWith(u8, file, ".svd")) {
             continue;
         }
 
         // Gets out the 15, 16, 17, or 18 that is in the chip name
-        const chip_subtype = try std.fmt.parseUnsigned(u32, file.name[9..11], 10);
-        const base_entry = switch (chip_subtype) {
+        const chip_subtype = try std.fmt.parseUnsigned(u32, file[6..8], 10);
+        const base_entry: ?MicroZig.Chip = switch (chip_subtype) {
             15 => samd21_15_base,
             16 => samd21_16_base,
             17 => samd21_17_base,
@@ -77,36 +143,31 @@ fn getChips() []MicroZig.Target {
             continue;
         }
 
-        _ = try chip_list.addOne(.{ .preferred_format = .elf, .chip = updateStruct(base_entry, .{
-            .name = file.name[0..(file.name.len - 4)].*,
-            .url = "https://www.microchip.com/en-us/product/" ++ file.name[0..11],
-            .register_definition = .{ .svd = .{ .path = build_root ++ "/src/chips/" ++ file.name } },
-        }) });
+        chip_list[counter] = .{ .preferred_format = .elf, .chip = updateStruct(base_entry.?, .{ .cpu = MicroZig.cpus.cortex_m4, .name = file[0..(file.len - 4)], .url = "https://www.microchip.com/en-us/product/" ++ file[0..11], .register_definition = .{ .svd = .{ .path = build_root ++ "/src/chips/" ++ file } }, .memory_regions = &.{.{ .kind = .flash, .offset = 0, .length = 0 }} }) };
+        counter += 1;
     }
 
-    return try chip_list.toOwnedSlice();
+    return chip_list[0..counter];
 }
 
 fn ChipStruct() type {
-    var field_list = std.ArrayList(MicroZig.Target).init(std.heap.c_allocator);
-    defer field_list.deinit();
-
     const chip_list = getChips();
+    var field_list: [chip_list.len]std.builtin.Type.StructField = undefined;
 
-    for (chip_list) |chip| {
+    for (chip_list, 0..) |chip, i| {
         const field_name = chip.name;
-        _ = try field_list.addOne(std.builtin.Type.StructField{
+        field_list[i] = std.builtin.Type.StructField{
             .name = std.ascii.toLower(field_name),
             .type = MicroZig.Target,
             .default_value = chip,
             .is_comptime = true,
-        });
+        };
     }
 
     return @Type(.{
         .Struct = .{
-            .layout = .Auto,
-            .fields = field_list.toOwnedSlice(),
+            .layout = .auto,
+            .fields = &field_list,
             .decls = &[_]std.builtin.Type.Declaration{},
             .is_tuple = false,
         },
