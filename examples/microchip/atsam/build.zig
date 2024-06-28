@@ -3,7 +3,7 @@ const MicroZig = @import("microzig/build");
 const atsam = @import("microzig/bsp/microchip/atsam");
 
 const available_examples = [_]Example{
-    .{ .target = atsam.chips.atsamd51j19, .name = "atsamd51j19-blinky", .file = "src/blinky.zig" },
+    .{ .target = atsam.chips.atsamd51j19a, .name = "atsamd51j19-blinky", .file = "src/blinky.zig" },
 };
 
 pub fn build(b: *std.Build) void {

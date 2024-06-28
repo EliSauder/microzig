@@ -13,40 +13,81 @@ const build_root = root();
 
 const listOfChips = [_][]const u8{
     "ATSAMD21E15A.svd",
-    "ATSAMD21E15L.svd",
-    "ATSAMD21E16CU.svd",
-    "ATSAMD21E17DU.svd",
-    "ATSAMD21G15B.svd",
-    "ATSAMD21G16L.svd",
-    "ATSAMD21G17L.svd",
-    "ATSAMD21J15B.svd",
-    "ATSAMD21J17D.svd",
     "ATSAMD21E15B.svd",
-    "ATSAMD21E16A.svd",
-    "ATSAMD21E16L.svd",
-    "ATSAMD21E17L.svd",
-    "ATSAMD21G15L.svd",
-    "ATSAMD21G17A.svd",
-    "ATSAMD21G18A.svd",
-    "ATSAMD21J16A.svd",
-    "ATSAMD21J18A.svd",
     "ATSAMD21E15BU.svd",
-    "ATSAMD21E16B.svd",
-    "ATSAMD21E17A.svd",
-    "ATSAMD21E18A.svd",
-    "ATSAMD21G16A.svd",
-    "ATSAMD21G17AU.svd",
-    "ATSAMD21G18AU.svd",
-    "ATSAMD21J16B.svd",
-    "ATSAMD51J19A.atdf",
     "ATSAMD21E15CU.svd",
+    "ATSAMD21E15L.svd",
+    "ATSAMD21E16A.svd",
+    "ATSAMD21E16B.svd",
     "ATSAMD21E16BU.svd",
+    "ATSAMD21E16CU.svd",
+    "ATSAMD21E16L.svd",
+    "ATSAMD21E17A.svd",
     "ATSAMD21E17D.svd",
+    "ATSAMD21E17DU.svd",
+    "ATSAMD21E17L.svd",
+    "ATSAMD21E18A.svd",
     "ATSAMD21G15A.svd",
+    "ATSAMD21G15B.svd",
+    "ATSAMD21G15L.svd",
+    "ATSAMD21G16A.svd",
     "ATSAMD21G16B.svd",
+    "ATSAMD21G16L.svd",
+    "ATSAMD21G17A.svd",
+    "ATSAMD21G17AU.svd",
     "ATSAMD21G17D.svd",
+    "ATSAMD21G17L.svd",
+    "ATSAMD21G18A.svd",
+    "ATSAMD21G18AU.svd",
     "ATSAMD21J15A.svd",
+    "ATSAMD21J15B.svd",
+    "ATSAMD21J16A.svd",
+    "ATSAMD21J16B.svd",
     "ATSAMD21J17A.svd",
+    "ATSAMD21J17D.svd",
+    "ATSAMD21J18A.svd",
+    "ATSAMD51G18A.svd",
+    "ATSAMD51G19A.svd",
+    "ATSAMD51J18A.svd",
+    "ATSAMD51J19A.svd",
+    "ATSAMD51J20A.svd",
+    "ATSAMD51N19A.svd",
+    "ATSAMD51N20A.svd",
+    "ATSAMD51P19A.svd",
+    "ATSAMD51P20A.svd",
+};
+
+const samd51_18_base = MicroZig.Chip{
+    .name = "",
+    .cpu = MicroZig.cpus.cortex_m4,
+    .register_definition = .{ .svd = .{ .path = "" } },
+    .memory_regions = &.{
+        .{ .kind = .flash, .offset = 0x00000000, .length = 256 * 1024 }, // Embedded Flash
+        .{ .kind = .ram, .offset = 0x20000000, .length = 128 * 1024 }, // Embedded SRAM
+        .{ .kind = .ram, .offset = 0x47000000, .length = 8 * 1024 }, // Backup SRAM
+    },
+};
+
+const samd51_19_base = MicroZig.Chip{
+    .name = "",
+    .cpu = MicroZig.cpus.cortex_m4,
+    .register_definition = .{ .svd = .{ .path = "" } },
+    .memory_regions = &.{
+        .{ .kind = .flash, .offset = 0x00000000, .length = 512 * 1024 }, // Embedded Flash
+        .{ .kind = .ram, .offset = 0x20000000, .length = 192 * 1024 }, // Embedded SRAM
+        .{ .kind = .ram, .offset = 0x47000000, .length = 8 * 1024 }, // Backup SRAM
+    },
+};
+
+const samd51_20_base = MicroZig.Chip{
+    .name = "",
+    .cpu = MicroZig.cpus.cortex_m4,
+    .register_definition = .{ .svd = .{ .path = "" } },
+    .memory_regions = &.{
+        .{ .kind = .flash, .offset = 0x00000000, .length = 1024 * 1024 }, // Embedded Flash
+        .{ .kind = .ram, .offset = 0x20000000, .length = 256 * 1024 }, // Embedded SRAM
+        .{ .kind = .ram, .offset = 0x47000000, .length = 8 * 1024 }, // Backup SRAM
+    },
 };
 
 const samd21_15_base = MicroZig.Chip{
@@ -116,14 +157,14 @@ fn getChipNames() []const []const u8 {
 //     return chip_list.toOwnedSlice();
 // }
 
-fn getChips() []MicroZig.Target {
+fn getTargets() []MicroZig.Target {
     const chip_names = getChipNames();
     var chip_list: [chip_names.len]MicroZig.Target = undefined;
 
     var counter = 0;
     for (chip_names) |file| {
         @setEvalBranchQuota(100_000);
-        if (!std.mem.startsWith(u8, file, "ATSAMD21")) {
+        if (!std.mem.startsWith(u8, file, "ATSAMD")) {
             continue;
         }
         if (!std.mem.endsWith(u8, file, ".svd")) {
@@ -131,14 +172,24 @@ fn getChips() []MicroZig.Target {
         }
 
         // Gets out the 15, 16, 17, or 18 that is in the chip name
-        const chip_subtype = try std.fmt.parseUnsigned(u32, file[6..8], 10);
-        const base_entry: ?MicroZig.Chip = switch (chip_subtype) {
-            15 => samd21_15_base,
-            16 => samd21_16_base,
-            17 => samd21_17_base,
-            18 => samd21_18_base,
-            else => null,
-        };
+        const chip_subtype = try std.fmt.parseUnsigned(u32, file[9..11], 10);
+        var base_entry: ?MicroZig.Chip = null;
+        if (std.mem.eql(u8, file[6..8], "21")) {
+            base_entry = switch (chip_subtype) {
+                15 => samd21_15_base,
+                16 => samd21_16_base,
+                17 => samd21_17_base,
+                18 => samd21_18_base,
+                else => null,
+            };
+        } else if (std.mem.eql(u8, file[6..8], "51")) {
+            base_entry = switch (chip_subtype) {
+                18 => samd51_18_base,
+                19 => samd51_19_base,
+                20 => samd51_20_base,
+                else => null,
+            };
+        }
         if (base_entry == null) {
             continue;
         }
@@ -151,15 +202,19 @@ fn getChips() []MicroZig.Target {
 }
 
 fn ChipStruct() type {
-    const chip_list = getChips();
-    var field_list: [chip_list.len]std.builtin.Type.StructField = undefined;
+    const target_list = getTargets();
+    var field_list: [target_list.len]std.builtin.Type.StructField = undefined;
 
-    for (chip_list, 0..) |chip, i| {
-        const field_name = chip.name;
+    for (target_list, 0..) |target, i| {
+        var field_name: [target.chip.name.len:0]u8 = undefined;
+        for (target.chip.name, 0..) |char, j| {
+            field_name[j] = std.ascii.toLower(char);
+        }
         field_list[i] = std.builtin.Type.StructField{
-            .name = std.ascii.toLower(field_name),
+            .alignment = 1,
+            .name = field_name[0.. :0],
             .type = MicroZig.Target,
-            .default_value = chip,
+            .default_value = &target,
             .is_comptime = true,
         };
     }
