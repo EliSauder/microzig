@@ -12,55 +12,55 @@ fn root() []const u8 {
 const build_root = root();
 
 const listOfChips = [_][]const u8{
-    "ATSAMD21E15A.svd",
-    "ATSAMD21E15B.svd",
-    "ATSAMD21E15BU.svd",
-    "ATSAMD21E15CU.svd",
-    "ATSAMD21E15L.svd",
-    "ATSAMD21E16A.svd",
-    "ATSAMD21E16B.svd",
-    "ATSAMD21E16BU.svd",
-    "ATSAMD21E16CU.svd",
-    "ATSAMD21E16L.svd",
-    "ATSAMD21E17A.svd",
-    "ATSAMD21E17D.svd",
-    "ATSAMD21E17DU.svd",
-    "ATSAMD21E17L.svd",
-    "ATSAMD21E18A.svd",
-    "ATSAMD21G15A.svd",
-    "ATSAMD21G15B.svd",
-    "ATSAMD21G15L.svd",
-    "ATSAMD21G16A.svd",
-    "ATSAMD21G16B.svd",
-    "ATSAMD21G16L.svd",
-    "ATSAMD21G17A.svd",
-    "ATSAMD21G17AU.svd",
-    "ATSAMD21G17D.svd",
-    "ATSAMD21G17L.svd",
-    "ATSAMD21G18A.svd",
-    "ATSAMD21G18AU.svd",
-    "ATSAMD21J15A.svd",
-    "ATSAMD21J15B.svd",
-    "ATSAMD21J16A.svd",
-    "ATSAMD21J16B.svd",
-    "ATSAMD21J17A.svd",
-    "ATSAMD21J17D.svd",
-    "ATSAMD21J18A.svd",
-    "ATSAMD51G18A.svd",
-    "ATSAMD51G19A.svd",
-    "ATSAMD51J18A.svd",
-    "ATSAMD51J19A.svd",
-    "ATSAMD51J20A.svd",
-    "ATSAMD51N19A.svd",
-    "ATSAMD51N20A.svd",
-    "ATSAMD51P19A.svd",
-    "ATSAMD51P20A.svd",
+    "ATSAMD21E15A.atdf",
+    "ATSAMD21E15B.atdf",
+    "ATSAMD21E15BU.atdf",
+    "ATSAMD21E15CU.atdf",
+    "ATSAMD21E15L.atdf",
+    "ATSAMD21E16A.atdf",
+    "ATSAMD21E16B.atdf",
+    "ATSAMD21E16BU.atdf",
+    "ATSAMD21E16CU.atdf",
+    "ATSAMD21E16L.atdf",
+    "ATSAMD21E17A.atdf",
+    "ATSAMD21E17D.atdf",
+    "ATSAMD21E17DU.atdf",
+    "ATSAMD21E17L.atdf",
+    "ATSAMD21E18A.atdf",
+    "ATSAMD21G15A.atdf",
+    "ATSAMD21G15B.atdf",
+    "ATSAMD21G15L.atdf",
+    "ATSAMD21G16A.atdf",
+    "ATSAMD21G16B.atdf",
+    "ATSAMD21G16L.atdf",
+    "ATSAMD21G17A.atdf",
+    "ATSAMD21G17AU.atdf",
+    "ATSAMD21G17D.atdf",
+    "ATSAMD21G17L.atdf",
+    "ATSAMD21G18A.atdf",
+    "ATSAMD21G18AU.atdf",
+    "ATSAMD21J15A.atdf",
+    "ATSAMD21J15B.atdf",
+    "ATSAMD21J16A.atdf",
+    "ATSAMD21J16B.atdf",
+    "ATSAMD21J17A.atdf",
+    "ATSAMD21J17D.atdf",
+    "ATSAMD21J18A.atdf",
+    "ATSAMD51G18A.atdf",
+    "ATSAMD51G19A.atdf",
+    "ATSAMD51J18A.atdf",
+    "ATSAMD51J19A.atdf",
+    "ATSAMD51J20A.atdf",
+    "ATSAMD51N19A.atdf",
+    "ATSAMD51N20A.atdf",
+    "ATSAMD51P19A.atdf",
+    "ATSAMD51P20A.atdf",
 };
 
 const samd51_18_base = MicroZig.Chip{
     .name = "",
     .cpu = MicroZig.cpus.cortex_m4,
-    .register_definition = .{ .svd = .{ .path = "" } },
+    .register_definition = .{ .atdf = .{ .path = "" } },
     .memory_regions = &.{
         .{ .kind = .flash, .offset = 0x00000000, .length = 256 * 1024 }, // Embedded Flash
         .{ .kind = .ram, .offset = 0x20000000, .length = 128 * 1024 }, // Embedded SRAM
@@ -71,7 +71,7 @@ const samd51_18_base = MicroZig.Chip{
 const samd51_19_base = MicroZig.Chip{
     .name = "",
     .cpu = MicroZig.cpus.cortex_m4,
-    .register_definition = .{ .svd = .{ .path = "" } },
+    .register_definition = .{ .atdf = .{ .path = "" } },
     .memory_regions = &.{
         .{ .kind = .flash, .offset = 0x00000000, .length = 512 * 1024 }, // Embedded Flash
         .{ .kind = .ram, .offset = 0x20000000, .length = 192 * 1024 }, // Embedded SRAM
@@ -82,7 +82,7 @@ const samd51_19_base = MicroZig.Chip{
 const samd51_20_base = MicroZig.Chip{
     .name = "",
     .cpu = MicroZig.cpus.cortex_m4,
-    .register_definition = .{ .svd = .{ .path = "" } },
+    .register_definition = .{ .atdf = .{ .path = "" } },
     .memory_regions = &.{
         .{ .kind = .flash, .offset = 0x00000000, .length = 1024 * 1024 }, // Embedded Flash
         .{ .kind = .ram, .offset = 0x20000000, .length = 256 * 1024 }, // Embedded SRAM
@@ -93,7 +93,7 @@ const samd51_20_base = MicroZig.Chip{
 const samd21_15_base = MicroZig.Chip{
     .name = "",
     .cpu = MicroZig.cpus.cortex_m0plus,
-    .register_definition = .{ .svd = .{ .path = "" } },
+    .register_definition = .{ .atdf = .{ .path = "" } },
     .memory_regions = &.{
         .{ .kind = .flash, .offset = 0x00000000, .length = 32 * 1024 }, // Embedded Flash
         .{ .kind = .ram, .offset = 0x20000000, .length = 4 * 1024 }, // Embedded SRAM
@@ -102,7 +102,7 @@ const samd21_15_base = MicroZig.Chip{
 const samd21_16_base = MicroZig.Chip{
     .name = "",
     .cpu = MicroZig.cpus.cortex_m0plus,
-    .register_definition = .{ .svd = .{ .path = "" } },
+    .register_definition = .{ .atdf = .{ .path = "" } },
     .memory_regions = &.{
         .{ .kind = .flash, .offset = 0x00000000, .length = 64 * 1024 }, // Embedded Flash
         .{ .kind = .ram, .offset = 0x20000000, .length = 8 * 1024 }, // Embedded SRAM
@@ -111,7 +111,7 @@ const samd21_16_base = MicroZig.Chip{
 const samd21_17_base = MicroZig.Chip{
     .name = "",
     .cpu = MicroZig.cpus.cortex_m0plus,
-    .register_definition = .{ .svd = .{ .path = "" } },
+    .register_definition = .{ .atdf = .{ .path = "" } },
     .memory_regions = &.{
         .{ .kind = .flash, .offset = 0x00000000, .length = 128 * 1024 }, // Embedded Flash
         .{ .kind = .ram, .offset = 0x20000000, .length = 16 * 1024 }, // Embedded SRAM
@@ -120,7 +120,7 @@ const samd21_17_base = MicroZig.Chip{
 const samd21_18_base = MicroZig.Chip{
     .name = "",
     .cpu = MicroZig.cpus.cortex_m0plus,
-    .register_definition = .{ .svd = .{ .path = "" } },
+    .register_definition = .{ .atdf = .{ .path = "" } },
     .memory_regions = &.{
         .{ .kind = .flash, .offset = 0x00000000, .length = 256 * 1024 }, // Embedded Flash
         .{ .kind = .ram, .offset = 0x20000000, .length = 32 * 1024 }, // Embedded SRAM
@@ -167,7 +167,7 @@ fn getTargets() []MicroZig.Target {
         if (!std.mem.startsWith(u8, file, "ATSAMD")) {
             continue;
         }
-        if (!std.mem.endsWith(u8, file, ".svd")) {
+        if (!std.mem.endsWith(u8, file, ".atdf")) {
             continue;
         }
 
@@ -194,7 +194,16 @@ fn getTargets() []MicroZig.Target {
             continue;
         }
 
-        chip_list[counter] = .{ .preferred_format = .elf, .chip = updateStruct(base_entry.?, .{ .cpu = MicroZig.cpus.cortex_m4, .name = file[0..(file.len - 4)], .url = "https://www.microchip.com/en-us/product/" ++ file[0..11], .register_definition = .{ .svd = .{ .path = build_root ++ "/src/chips/" ++ file } }, .memory_regions = &.{.{ .kind = .flash, .offset = 0, .length = 0 }} }) };
+        chip_list[counter] = .{ 
+            .preferred_format = .elf, 
+            .chip = updateStruct(base_entry.?, .{ 
+                    .cpu = MicroZig.cpus.cortex_m4, 
+                    .name = file[0..(file.len - 4)], 
+                    .url = "https://www.microchip.com/en-us/product/" ++ file[0..11], 
+                    .register_definition = .{ .atdf = .{ .path = build_root ++ "/src/chips/" ++ file } }, 
+                    .memory_regions = &.{.{ .kind = .flash, .offset = 0, .length = 0 }} 
+            }) 
+        };
         counter += 1;
     }
 
@@ -256,7 +265,7 @@ pub const chips = ChipStruct();
 //             .name = "ATSAMD21E15A",
 //             .url = "https://www.microchip.com/en-us/product/ATSAMD21E15",
 //             .register_definition = .{
-//                 .svd = .{ .path = build_root ++ "/src/chips/ATSAMD21E15A.svd" },
+//                 .atdf = .{ .path = build_root ++ "/src/chips/ATSAMD21E15A.atdf" },
 //             },
 //         }),
 //     };
@@ -266,7 +275,7 @@ pub const chips = ChipStruct();
 //             .name = "ATSAMD21E15B",
 //             .url = "https://www.microchip.com/en-us/product/ATSAMD21E15",
 //             .register_definition = .{
-//                 .svd = .{ .path = build_root ++ "/src/chips/ATSAMD21E15B.svd" },
+//                 .atdf = .{ .path = build_root ++ "/src/chips/ATSAMD21E15B.atdf" },
 //             },
 //         }),
 //     };
@@ -276,7 +285,7 @@ pub const chips = ChipStruct();
 //             .name = "ATSAMD21E15BU",
 //             .url = "https://www.microchip.com/en-us/product/ATSAMD21E15",
 //             .register_definition = .{
-//                 .svd = .{ .path = build_root ++ "/src/chips/ATSAMD21E15BU.svd" },
+//                 .atdf = .{ .path = build_root ++ "/src/chips/ATSAMD21E15BU.atdf" },
 //             },
 //         }),
 //     };
@@ -286,7 +295,7 @@ pub const chips = ChipStruct();
 //             .name = "ATSAMD21E15CU",
 //             .url = "https://www.microchip.com/en-us/product/ATSAMD21E15",
 //             .register_definition = .{
-//                 .svd = .{ .path = build_root ++ "/src/chips/ATSAMD21E15CU.svd" },
+//                 .atdf = .{ .path = build_root ++ "/src/chips/ATSAMD21E15CU.atdf" },
 //             },
 //         }),
 //     };
@@ -296,7 +305,7 @@ pub const chips = ChipStruct();
 //             .name = "ATSAMD21E15CU",
 //             .url = "https://www.microchip.com/en-us/product/ATSAMD21E15",
 //             .register_definition = .{
-//                 .svd = .{ .path = build_root ++ "/src/chips/ATSAMD21E15CU.svd" },
+//                 .atdf = .{ .path = build_root ++ "/src/chips/ATSAMD21E15CU.atdf" },
 //             },
 //         }),
 //     };
