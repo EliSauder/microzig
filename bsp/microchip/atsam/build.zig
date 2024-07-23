@@ -2,6 +2,34 @@ const std = @import("std");
 const MicroZig = @import("microzig/build");
 
 pub fn build(b: *std.Build) void {
+    const target = b.standardTargetOptions(.{});
+    const optimize = b.standardOptimizeOption(.{});
+    const lib = b.addStaticLibrary(.{
+        .name = "bsp/microchip/atsam",
+        .root_source_file = b.path("src/lib.zig"),
+        .target = target,
+        .optimize = optimize,
+    });
+    b.installArtifact(lib);
+    _ = b.addModule("bsp/microchip/atsam", .{ .root_source_file = b.path("src/lib.zig") });
+
+    //const gen = b.addExecutable(.{
+    //    .name = "generate_struct",
+    //    .root_source_file = b.path("gen/get_chips.zig"),
+    //    .target = b.host,
+    //});
+
+    //const gen_setup = b.addRunArtifact(gen);
+    //const output = gen_setup.addOutputFileArg("chips.zig");
+
+    //var build_mod = b.createModule(.{ .root_source_file = b.path("build.zig") });
+    //build_mod.addAnonymousImport("chips", .{
+    //    .root_source_file = output,
+    //});
+    //b.build_root.addAnonymousImport("chips", .{
+    //    .root_source_file = output,
+    //});
+
     _ = b.step("test", "Run platform agnostic unit tests");
 }
 
@@ -137,25 +165,25 @@ fn updateStruct(base: MicroZig.Chip, per_chip_value: MicroZig.Chip) MicroZig.Chi
     };
 }
 
-fn getChipNames() []const []const u8 {
-    return listOfChips[0..];
-}
-
-// fn getChipNames() [][]const u8 {
-//     var chip_list = std.ArrayList([]const u8).init(std.heap.c_allocator);
-//     defer chip_list.deinit();
-//
-//     var dir = try std.fs.openDirAbsolute(build_root ++ "/src/chips/", .{ .iterate = true });
-//     var it = dir.iterate();
-//     while (try it.next()) |file| {
-//            if (file.kind != .File) {
-//                continue;
-//            }
-//         try chip_list.append(file.name);
-//     }
-//
-//     return chip_list.toOwnedSlice();
+// fn getChipNames() []const []const u8 {
+//     return listOfChips[0..];
 // }
+
+fn getChipNames() [][]const u8 {
+    var chip_list = std.ArrayList([]const u8).init(std.heap.c_allocator);
+    defer chip_list.deinit();
+
+    var dir = try std.fs.openDirAbsolute(build_root ++ "/src/chips/", .{ .iterate = true });
+    var it = dir.iterate();
+    while (try it.next()) |file| {
+        if (file.kind != .File) {
+            continue;
+        }
+        try chip_list.append(file.name);
+    }
+
+    return chip_list.toOwnedSlice();
+}
 
 fn getTargets() []MicroZig.Target {
     const chip_names = getChipNames();
@@ -194,52 +222,43 @@ fn getTargets() []MicroZig.Target {
             continue;
         }
 
-        chip_list[counter] = .{ 
-            .preferred_format = .elf, 
-            .chip = updateStruct(base_entry.?, .{ 
-                    .cpu = MicroZig.cpus.cortex_m4, 
-                    .name = file[0..(file.len - 4)], 
-                    .url = "https://www.microchip.com/en-us/product/" ++ file[0..11], 
-                    .register_definition = .{ .atdf = .{ .path = build_root ++ "/src/chips/" ++ file } }, 
-                    .memory_regions = &.{.{ .kind = .flash, .offset = 0, .length = 0 }} 
-            }) 
-        };
+        chip_list[counter] = .{ .preferred_format = .elf, .chip = updateStruct(base_entry.?, .{ .cpu = MicroZig.cpus.cortex_m4, .name = file[0..(file.len - 4)], .url = "https://www.microchip.com/en-us/product/" ++ file[0..11], .register_definition = .{ .atdf = .{ .path = build_root ++ "/src/chips/" ++ file } }, .memory_regions = &.{.{ .kind = .flash, .offset = 0, .length = 0 }} }) };
         counter += 1;
     }
 
     return chip_list[0..counter];
 }
 
-fn ChipStruct() type {
-    const target_list = getTargets();
-    var field_list: [target_list.len]std.builtin.Type.StructField = undefined;
+// fn ChipStruct() type {
+//     const target_list = getTargets();
+//     var field_list: [target_list.len]std.builtin.Type.StructField = undefined;
+//
+//     for (target_list, 0..) |target, i| {
+//         var field_name: [target.chip.name.len:0]u8 = undefined;
+//         for (target.chip.name, 0..) |char, j| {
+//             field_name[j] = std.ascii.toLower(char);
+//         }
+//         field_list[i] = std.builtin.Type.StructField{
+//             .alignment = @alignOf(MicroZig.Target),
+//             .name = field_name[0.. :0],
+//             .type = MicroZig.Target,
+//             .default_value = &target,
+//             .is_comptime = false,
+//         };
+//     }
+//
+//     const return_type = @Type(.{
+//         .Struct = .{
+//             .layout = .auto,
+//             .fields = &field_list,
+//             .decls = &[_]std.builtin.Type.Declaration{},
+//             .is_tuple = false,
+//         },
+//     });
+//     return return_type;
+// }
 
-    for (target_list, 0..) |target, i| {
-        var field_name: [target.chip.name.len:0]u8 = undefined;
-        for (target.chip.name, 0..) |char, j| {
-            field_name[j] = std.ascii.toLower(char);
-        }
-        field_list[i] = std.builtin.Type.StructField{
-            .alignment = @alignOf(MicroZig.Target),
-            .name = field_name[0.. :0],
-            .type = MicroZig.Target,
-            .default_value = &target,
-            .is_comptime = false,
-        };
-    }
-
-    const return_type = @Type(.{
-        .Struct = .{
-            .layout = .auto,
-            .fields = &field_list,
-            .decls = &[_]std.builtin.Type.Declaration{},
-            .is_tuple = false,
-        },
-    });
-    return return_type;
-}
-
-pub const chips = ChipStruct();
+// pub const chips = ChipStruct();
 
 // pub const chips = struct {
 //     pub const atsamd51j19 = MicroZig.Target{
