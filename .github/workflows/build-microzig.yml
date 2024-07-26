@@ -32,7 +32,6 @@ jobs:
         bsp/**
         examples/**
       is-packaged: true
-      github-artifact-name: microzig
       artifact-output-paths: boxzer-out
     secrets:
       downloads-url: ${{ secrets.DOWNLOADS_URL }}
