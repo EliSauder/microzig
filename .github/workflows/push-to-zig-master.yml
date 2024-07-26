@@ -1,0 +1,22 @@
+name: Push to Zig Master
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - build.zig*
+      - tools/**
+      - core/**
+      - bsp/**
+      - examples/**
+
+jobs:
+  create-branch:
+    runs-on: linux-latest
+    steps:
+      - uses: peterjgrainger/action-create-branch@v2.2.0
+        with:
+          branch: master-patch/${{ github.event.push.head.sha }}
+          sha:
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
