@@ -3,33 +3,42 @@ name: Reusable zig build workflow
 on:
   workflow_call:
     inputs:
+      # The version to build on
       zig-version:
         required: false
         type: string
         default: 0.13.0
+      # Whether or not to clone submodules
       get-submodules:
         required: false
         type: string
         default: false
+      # If using sparse checkout, the file patterns to include when cloning
       sparse-checkout-patterns:
         required: false
         type: string
         default: ""
+      # If building a subproject only, you can specify a working directory
+      # which is the path to that subproject.
       working-directory:
         required: false
         type: string
         default: "."
+      # Whether or not to use a provided package command.
       is-packaged:
         required: false
         type: boolean
         default: false
+      # The github artifact name for uploading build artifacts to
       github-artifact-name:
         required: true
         type: string
+      # The path that we should upload artifacts from
       artifact-output-paths:
         required: true
         type: string
     secrets:
+      # The downloads url for the packaging step
       downloads-url:
         required: false
 
@@ -60,4 +69,4 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: ${{ inputs.github-artifact-name }}
-          path: ${{ input.artifact-output-paths }}
+          path: ${{ inputs.artifact-output-paths }}
