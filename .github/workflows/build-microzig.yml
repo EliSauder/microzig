@@ -20,7 +20,7 @@ on:
 
 jobs:
   build-microzig:
-    if: ${{ ( github.event_name == "pull_request" && github.base_ref == "main" ) || github.ref_name == "main" }}
+    if: ${{ ( github.event_name == 'pull_request' && github.base_ref == 'main' ) || github.ref_name == 'main' }}
     uses: ./.github/workflows/zig-build-base.yml
     with:
       zig-version: 0.13.0
@@ -37,7 +37,7 @@ jobs:
     secrets:
       downloads-url: ${{ secrets.DOWNLOADS_URL }}
   build-microzig-master:
-    if: ${{ ( github.event_name == "pull_request" && github.base_ref == "zig-master" ) || github.ref_name == "zig-master" }}
+    if: ${{ ( github.event_name == 'pull_request' && github.base_ref == 'zig-master' ) || github.ref_name == 'zig-master' }}
     uses: ./.github/workflows/zig-build-base.yml
     with:
       zig-version: master
@@ -54,7 +54,7 @@ jobs:
     secrets:
       downloads-url: ${{ secrets.DOWNLOADS_URL }}
   create-branch:
-    if: ${{ github.event == "push" && github.ref_name == "main" }}
+    if: ${{ github.event == 'push' && github.ref_name == 'main' }}
     needs:
       - build-microzig
     runs-on: ubuntu-latest
