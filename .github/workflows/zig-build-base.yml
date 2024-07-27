@@ -62,11 +62,11 @@ jobs:
         with:
           version: ${{ inputs.zig-version }}
       - name: Build
-        if: ${{ ! inputs.is-packaged }}
+        if: ${{ ! inputs.is-packaged || ! runner.os == 'macOS' }}
         run: zig build -Doptimize=ReleaseSmall
         working-directory: ${{ inputs.working-directory }}
       - name: Package
-        if: ${{ inputs.is-packaged }}
+        if: ${{ inputs.is-packaged && runner.os == 'macOS' }}
         run: zig build package -- "${{ secrets.downloads-url }}"
       - name: Upload Artifacts
         if: ${{ inputs.artifact-output-paths == '' }}
