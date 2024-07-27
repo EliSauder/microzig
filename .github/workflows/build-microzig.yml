@@ -33,6 +33,7 @@ jobs:
         build/
         bsp/
         examples/
+        design/
       is-packaged: true
       artifact-output-paths: boxzer-out
     secrets:
