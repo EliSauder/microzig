@@ -62,7 +62,7 @@ jobs:
         with:
           version: ${{ inputs.zig-version }}
       - name: Build
-        if: ${{ ! inputs.is-packaged || ! runner.os == 'macOS' }}
+        if: ${{ ! inputs.is-packaged || runner.os != 'macOS' }}
         run: zig build -Doptimize=ReleaseSmall
         working-directory: ${{ inputs.working-directory }}
       - name: Package
