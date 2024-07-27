@@ -21,7 +21,7 @@ on:
 jobs:
   build-microzig:
     if: ${{ ( github.event_name == "pull_request" && github.base_ref == "main" ) || github.ref_name == "main" }}
-    uses: ZigEmbeddedGroup/microzig/.github/workflows/build-zig-base.yml@main
+    uses: ZigEmbeddedGroup/microzig/.github/workflows/zig-build-base.yml@main
     with:
       zig-version: 0.13.0
       get-submodules: true
@@ -38,7 +38,7 @@ jobs:
       downloads-url: ${{ secrets.DOWNLOADS_URL }}
   build-microzig-master:
     if: ${{ ( github.event_name == "pull_request" && github.base_ref == "zig-master" ) || github.ref_name == "zig-master" }}
-    uses: ZigEmbeddedGroup/microzig/.github/workflows/build-zig-base.yml@main
+    uses: ZigEmbeddedGroup/microzig/.github/workflows/zig-build-base.yml@main
     with:
       zig-version: master
       get-submodules: true
