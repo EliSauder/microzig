@@ -21,7 +21,7 @@ on:
 jobs:
   build-microzig:
     if: ${{ ( github.event_name == "pull_request" && github.base_ref == "main" ) || github.ref_name == "main" }}
-    uses: ZigEmbeddedGroup/microzig/.github/workflows/build-zig-base.yml
+    uses: ZigEmbeddedGroup/microzig/.github/workflows/build-zig-base.yml@main
     with:
       zig-version: 0.13.0
       get-submodules: true
@@ -38,7 +38,7 @@ jobs:
       downloads-url: ${{ secrets.DOWNLOADS_URL }}
   build-microzig-master:
     if: ${{ ( github.event_name == "pull_request" && github.base_ref == "zig-master" ) || github.ref_name == "zig-master" }}
-    uses: ZigEmbeddedGroup/microzig/.github/workflows/build-zig-base.yml
+    uses: ZigEmbeddedGroup/microzig/.github/workflows/build-zig-base.yml@main
     with:
       zig-version: master
       get-submodules: true
@@ -59,15 +59,15 @@ jobs:
       - build-microzig
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-        with:
-          ref: zig-master
       - uses: peterjgrainger/action-create-branch@v2.2.0
         with:
           branch: master-patch/${{ github.event.push.head.sha }}
           sha: ${{ github.event.push.head.sha }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - uses: actions/checkout@v4
+        with:
+          ref: master-patch/${{ github.event.push.head.sha }}
       - uses: peter-evans/create-pull-request@v6
         with:
-          branch: main
+          branch: zig-master
