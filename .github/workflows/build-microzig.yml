@@ -1,5 +1,9 @@
 name: Build Microzig
 
+permissions:
+  contents: write
+  pull-requests: write
+
 on:
   push:
     branches: [main, zig-master]
@@ -47,13 +51,13 @@ jobs:
     steps:
       - uses: peterjgrainger/action-create-branch@v2.2.0
         with:
-          branch: master-patch/${{ github.event.push.head.sha }}
+          branch: master-patch/${{ github.sha }}
           sha: ${{ github.event.push.head.sha }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - uses: actions/checkout@v4
         with:
-          ref: master-patch/${{ github.event.push.head.sha }}
+          ref: master-patch/${{ github.sha }}
       - uses: peter-evans/create-pull-request@v6
         with:
           branch: zig-master
