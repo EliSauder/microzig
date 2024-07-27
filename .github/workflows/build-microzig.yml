@@ -40,7 +40,7 @@ jobs:
     secrets:
       downloads-url: ${{ secrets.DOWNLOADS_URL }}
   create-branch:
-    if: ${{ github.event == 'push' && github.ref_name == 'main' }}
+    if: ${{ github.event_name == 'push' && github.ref_name == 'main' }}
     needs:
       - build-microzig
     runs-on: ubuntu-latest
