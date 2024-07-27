@@ -54,8 +54,8 @@ jobs:
       - name: Checkout
         uses: actions/checkout@4
         with:
-          sparse-checkout: ${{ input.sparse-checkout-patterns }}
-          submodules: ${{ input.get-submodules }}
+          sparse-checkout: ${{ inputs.sparse-checkout-patterns }}
+          submodules: ${{ inputs.get-submodules }}
       - name: Setup Zig
         uses: goto-bus-stop/setup-zig@v2
         with:
