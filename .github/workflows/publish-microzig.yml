@@ -10,7 +10,7 @@ on:
 
 jobs:
   build-microzig:
-    uses: ZigEmbeddedGroup/microzig/.github/workflows/build-zig-base.yml@main
+    uses: ./.github/workflows/build-zig-base.yml@main
     with:
       zig-version: 0.13.0
       get-submodules: true
@@ -27,7 +27,7 @@ jobs:
     secrets:
       downloads-url: ${{ secrets.DOWNLOADS_URL }}
   publish-microzig:
-    uses: ZigEmbeddedGrouop/microzig/.github/workflows/publish-base.yml@main
+    uses: ./.github/workflows/publish-base.yml@main
     with:
       tag: ${{ github.ref_name }}
       artifact: microzig
