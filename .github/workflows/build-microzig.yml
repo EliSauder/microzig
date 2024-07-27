@@ -25,14 +25,6 @@ jobs:
     with:
       zig-version: 0.13.0
       get-submodules: true
-      sparse-checkout-patterns: |
-        build.zig
-        build.zig.zon
-        tools/
-        core/
-        build/
-        bsp/
-        examples/
       is-packaged: true
       artifact-output-paths: boxzer-out
     secrets:
@@ -43,14 +35,6 @@ jobs:
     with:
       zig-version: master
       get-submodules: true
-      sparse-checkout-patterns: |
-        build.zig
-        build.zig.zon
-        tools/
-        core/
-        build/
-        bsp/
-        examples/
       is-packaged: true
       artifact-output-paths: boxzer-out
     secrets:
