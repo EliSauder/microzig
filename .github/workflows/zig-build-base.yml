@@ -40,7 +40,8 @@ on:
         required: true
         type: string
     secrets:
-      # The downloads url for the packaging step
+      # The downloads url for the packaging step. This is used in boxzer to
+      # fill in the manifest downloads location
       downloads-url:
         required: false
 
