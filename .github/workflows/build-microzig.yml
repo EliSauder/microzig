@@ -52,7 +52,7 @@ jobs:
       - uses: peterjgrainger/action-create-branch@v2.2.0
         with:
           branch: master-patch/${{ github.sha }}
-          sha: ${{ github.event.push.head.sha }}
+          sha: ${{ github.sha }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - uses: actions/checkout@v4
