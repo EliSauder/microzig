@@ -104,8 +104,7 @@ jobs:
         id: ac
         run: |
           git config --global credential.helper store
-          git credential approve <<EOF username="${{ github.actor }}" password="${{ secrets.PUSH_COMMIT }}" 
-          EOF
+          git credential approve <<< 'url=${{ github.repositoryUrl }} username="${{ github.actor }}" password="${{ secrets.PUSH_COMMIT }}"'
           git config user.name "$(git log -1 --pretty=format:'%an')"
           git config user.email "$(git log -1 --pretty=format:'%ae')"
           git add current-commit.txt
