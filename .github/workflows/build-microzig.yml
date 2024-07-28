@@ -104,6 +104,8 @@ jobs:
     outputs:
       new-sha: ${{ steps.ac.outputs.sha }}
     steps:
+      - name: checkout
+        uses: actions/checkout@v4
       - name: add-file
         run: |
           echo "${{ needs.create-branch.outputs.branch }}" >> current-commit.txt
