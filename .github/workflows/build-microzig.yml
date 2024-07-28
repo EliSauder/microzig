@@ -1,9 +1,5 @@
 name: Build Microzig
 
-permissions:
-  contents: write
-  pull-requests: write
-
 on:
   push:
     branches: [main, zig-master]
@@ -48,16 +44,36 @@ jobs:
     needs:
       - build-microzig
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
     steps:
+      - name: Check branch exists
+        id: check-branch-exists
+        run: |
+          if [[ -n $(git ls-remote --heads origin master-patch/${{ github.sha }}) ]]; then
+            echo "exists=true" >> $GITHUB_OUTPUT
+          else
+            echo "exists=false" >> $GITHUB_OUTPUT
+          fi
       - uses: actions/checkout@v4
+        if: ${{ ! steps.check-branch-exists.outputs.exists }}
       - uses: Vent-Finance/branch_creator@v1.0.0
+        if: ${{ ! steps.check-branch-exists.outputs.exists }}
         with:
           name: master-patch/${{ github.sha }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - uses: actions/checkout@v4
         with:
-          ref: master-patch/${{ github.sha }}
-      - uses: peter-evans/create-pull-request@v6
-        with:
-          branch: zig-master
+          depth: 0
+          ref: zig-master
+      - name: check pr exists
+        run: |
+          gh pr list -B zig-master -H master-patch/${{ github.sha }} | grep -q "no pull requests"
+      - name: create pull request,
+        if: ${{ }}
+        run: |
+          gh pr create -B zig-master -H master-patch/${{ github.sha }} --title 'Test commit ${{ github.sha }} with zig master' --body 'Created by Github action'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
