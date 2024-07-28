@@ -4,6 +4,7 @@ on:
   push:
     branches: [main]
     paths:
+      - .github/**
       - build.zig*
       - tools/**
       - core/**
@@ -61,10 +62,6 @@ jobs:
           name: master-patch/${{ github.sha }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - uses: actions/checkout@v4
-        with:
-          depth: 0
-          ref: zig-master
       - name: checkout
         uses: actions/checkout@v4
         with:
