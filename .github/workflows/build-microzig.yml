@@ -103,7 +103,7 @@ jobs:
       - name: add-commit
         id: ac
         run: |
-          gh auth login --with-token < "${{ secrets.PUSH_COMMIT }}"
+          gh auth login --with-token <<< "${{ secrets.PUSH_COMMIT }}"
           git config user.name "$(git log -1 --pretty=format:'%an')"
           git config user.email "$(git log -1 --pretty=format:'%ae')"
           git add current-commit.txt
