@@ -44,6 +44,8 @@ jobs:
     needs:
       - build-microzig
     runs-on: ubuntu-latest
+    outputs:
+      branch: master-patch/${{ github.sha }}
     permissions:
       contents: write
       pull-requests: write
@@ -95,3 +97,13 @@ jobs:
           gh pr create -B zig-master -H master-patch/${{ github.sha }} --title 'Test commit ${{ github.sha }} with zig master' --body 'Created by Github action'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  build-microzig-master-post-pr:
+    uses: ./.github/workflows/zig-build-base.yml
+    needs: create-branch
+    with:
+      zig-version: master
+      get-submodules: true
+      is-packaged: true
+      artifact-output-paths: boxzer-out
+    secrets:
+      downloads-url: ${{ secrets.DOWNLOADS_URL }}
