@@ -57,15 +57,12 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Create Branch
+        if: steps.cbe.outputs.exists == 'false'
         run: |
           git config user.name "$(git log -1 --pretty=format:'%an')"
           git config user.email "$(git log -1 --pretty=format:'%ae')"
           git checkout -b "master-patch/${{ github.sha }}"
           git push -u origin "master-patch/${{ github.sha }}"
-      - uses: Vent-Finance/branch_creator@v1.0.0
-        if: steps.cbe.outputs.exists == 'false'
-        with:
-          name: master-patch/${{ github.sha }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: checkout
