@@ -103,7 +103,9 @@ jobs:
       - name: add-commit
         id: ac
         run: |
-          gh auth login --with-token <<< "${{ secrets.PUSH_COMMIT }}"
+          git config --global credential.helper store
+          git credential approve <<EOF username="${{ github.actor }}" password="${{ secrets.PUSH_COMMIT }}" 
+          EOF
           git config user.name "$(git log -1 --pretty=format:'%an')"
           git config user.email "$(git log -1 --pretty=format:'%ae')"
           git add current-commit.txt
