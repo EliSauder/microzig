@@ -95,4 +95,27 @@ jobs:
         run: |
           gh pr create -B zig-master -H master-patch/${{ github.sha }} --title 'Testing commit ${{ github.sha }} with zig master' --body 'Created by Github action'
         env:
-          GITHUB_TOKEN: ${{ secrets.PR_CREATE_PAT }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  create-new-commit-for-ci:
+    needs: create-branch
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: checkout
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.create-branch.outputs.branch }}
+      - name: add-file
+        run: |
+          echo "${{ needs.create-branch.outputs.branch }}" > current-commit.txt
+      - name: add-commit
+        id: ac
+        run: |
+          git config user.name "$(git log -1 --pretty=format:'%an')"
+          git config user.email "$(git log -1 --pretty=format:'%ae')"
+          git add current-commit.txt
+          git commit -m "feat: added commit file (Github Actions)"
+          git push
+        env:
+          GITHUB_TOKEN: ${{ secrets.PUSH_COMMIT }}
