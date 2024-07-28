@@ -95,12 +95,15 @@ jobs:
         uses: actions/checkout@v4
         with:
           ref: ${{ needs.create-branch.outputs.branch }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.PUSH_COMMIT }}
       - name: add-file
         run: |
           echo "${{ needs.create-branch.outputs.branch }}" >> current-commit.txt
       - name: add-commit
         id: ac
         run: |
+          gh auth login --with-token < "${{ secrets.PUSH_COMMIT }}"
           git config user.name "$(git log -1 --pretty=format:'%an')"
           git config user.email "$(git log -1 --pretty=format:'%ae')"
           git add current-commit.txt

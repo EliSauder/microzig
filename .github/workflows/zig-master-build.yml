@@ -15,6 +15,8 @@ jobs:
     outputs:
       ref: ${{ steps.gmrp.outputs.ref }}
     steps:
+      - name: checkout
+        uses: actions/checkout@v4
       - name: get-most-recent-pr
         id: gmrp
         run: |
@@ -23,7 +25,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   build-microzig-master-post-pr:
     name: Build with master
-    needs: ["get-branch"]
+    needs: get-branch
     uses: ./.github/workflows/zig-build-base.yml
     with:
       zig-version: master
