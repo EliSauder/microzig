@@ -75,31 +75,22 @@ jobs:
           ref: zig-master
       - id: cpe
         name: check pr exists
-        # The github pr list command outputs something to strerr it pr does
-        # not exist. So, if there is something in stderr, the pr does
-        # exit
+        # github actions pr only outputs when the query find something.
+        # So, if the output is empty, pr does not exist
         run: |
           gh pr list -B zig-master -H "master-patch/${{ github.sha }}" 2> check-pr-exists-output
-          echo $?
-          echo $(cat check-pr-exists-output)
-          gh pr list -B zig-master -H "master-patch/${{ github.sha }}" &> all-output
-          echo $?
-          echo $(cat all-output)
-          gh pr list -B zig-master &> this-should-have-stuff-all-output
-          echo $?
-          echo $(cat this-should-have-stuff-all-output)
           if [[ -z "$(cat check-pr-exists-output)" ]]; then 
-            echo "exists=true" >> "$GITHUB_OUTPUT"
-            echo "exists=true"
-          else
             echo "exists=false" >> "$GITHUB_OUTPUT"
             echo "exists=false"
+          else
+            echo "exists=true" >> "$GITHUB_OUTPUT"
+            echo "exists=true"
           fi
           rm check-pr-exists-output
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: create pull request,
-        if: steps.cpe.outputs.exists == 'false'
+        if: ${{ steps.cpe.outputs.exists == 'false' && steps.cbe.outputs.exists == 'true' }}
         run: |
           gh pr create -B zig-master -H master-patch/${{ github.sha }} --title 'Test commit ${{ github.sha }} with zig master' --body 'Created by Github action'
         env:
