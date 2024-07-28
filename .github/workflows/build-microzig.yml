@@ -71,6 +71,8 @@ jobs:
       - name: check pr exists
         run: |
           gh pr list -B zig-master -H master-patch/${{ github.sha }} | grep -q "no pull requests"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: create pull request,
         if: ${{ }}
         run: |
