@@ -49,18 +49,15 @@ jobs:
       pull-requests: write
     steps:
       - uses: actions/checkout@v4
-      - name: Check branch exists
-        id: cbe
+      - id: cbe
+        name: Check branch exists
+        # The list remote returns nothing if the branch does not exist.
+        # So, if there is nothing in the command output, it does not exist
         run: |
-          git ls-remote --heads origin master-patch/${{ github.sha }} &> command-output
-          echo Comand status: $?
-          echo $(cat command-output)
           if [[ -z "$(git ls-remote --heads origin master-patch/${{ github.sha }})" ]]; then
-            echo "Case true"
-            echo "exists=false" >> $GITHUB_OUTPUT
+            echo "exists=false" >> "$GITHUB_OUTPUT"
           else
-            echo "Case false"
-            echo "exists=true" >> $GITHUB_OUTPUT
+            echo "exists=true" >> "$GITHUB_OUTPUT"
           fi
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -74,21 +71,20 @@ jobs:
         with:
           depth: 0
           ref: zig-master
-      - name: check pr exists
-        id: cpe
-        # the gh pr list command prints to stderr if there are no prs, then
-        # prints to stdout if it find some. First redirect stderr to file, then
-        # if there is content in the file, the pr doesn't exist
+      - id: cpe
+        name: check pr exists
+        # The github pr list command outputs something to strerr it pr does
+        # not exist. So, if there is something in stderr, the pr does
+        # exit
         run: |
-          gh pr list -B zig-master -H master-patch/${{ github.sha }} 2> check-pr-exists-output
+          gh pr list -B zig-master -H "master-patch/${{ github.sha }}" 2> check-pr-exists-output
           echo $(cat check-pr-exists-output)
           if [[ -z "$(cat check-pr-exists-output)" ]]; then 
-            echo "Case true"
-            echo "exists=true" >> $GITHUB_OUTPUT
+            echo "exists=true" >> "$GITHUB_OUTPUT"
           else
-            echo "Case false"
-            echo "exists=false" >> $GITHUB_OUTPUT
+            echo "exists=false" >> "$GITHUB_OUTPUT"
           fi
+          rm check-pr-exists-output
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: create pull request,
