@@ -76,7 +76,7 @@ jobs:
         # if there is content in the file, the pr doesn't exist
         run: |
           gh pr list -B zig-master -H master-patch/${{ github.sha }} 2> check-pr-exists-output
-          if [[ -n $(cat check-pr-exists-output)]]; then 
+          if [[ -n $(cat check-pr-exists-output) ]]; then 
             echo "exists=false" >> $GITHUB_OUTPUT
           else
             echo "exists=true" >> $GITHUB_OUTPUT
