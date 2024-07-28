@@ -90,7 +90,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: create pull request,
-        if: ${{ steps.cpe.outputs.exists == 'false' && steps.cbe.outputs.exists == 'true' }}
+        if: ${{ ! steps.cpe.outputs.exists && steps.cbe.outputs.exists }}
         run: |
           gh pr create -B zig-master -H master-patch/${{ github.sha }} --title 'Test commit ${{ github.sha }} with zig master' --body 'Created by Github action'
         env:
