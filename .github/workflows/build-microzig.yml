@@ -64,7 +64,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - uses: Vent-Finance/branch_creator@v1.0.0
-        if: ${{ ! steps.cbe.outputs.exists }}
+        if: steps.cbe.outputs.exists == 'false'
         with:
           name: master-patch/${{ github.sha }}
         env:
@@ -80,6 +80,8 @@ jobs:
         # exit
         run: |
           gh pr list -B zig-master -H "master-patch/${{ github.sha }}" 2> check-pr-exists-output
+          gh pr list -B zig-master -H "master-patch/${{ github.sha }}" &> all-output
+          echo $(cat all-output)
           echo $(cat check-pr-exists-output)
           if [[ -z "$(cat check-pr-exists-output)" ]]; then 
             echo "exists=true" >> "$GITHUB_OUTPUT"
@@ -92,7 +94,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: create pull request,
-        if: ${{ ! steps.cpe.outputs.exists && steps.cbe.outputs.exists }}
+        if: steps.cpe.outputs.exists == 'false'
         run: |
           gh pr create -B zig-master -H master-patch/${{ github.sha }} --title 'Test commit ${{ github.sha }} with zig master' --body 'Created by Github action'
         env:
