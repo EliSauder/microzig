@@ -48,18 +48,17 @@ jobs:
       contents: write
       pull-requests: write
     steps:
+      - uses: actions/checkout@v4
       - name: Check branch exists
-        id: check-branch-exists
+        id: cbe
         run: |
           if [[ -n $(git ls-remote --heads origin master-patch/${{ github.sha }}) ]]; then
             echo "exists=true" >> $GITHUB_OUTPUT
           else
             echo "exists=false" >> $GITHUB_OUTPUT
           fi
-      - uses: actions/checkout@v4
-        if: ${{ ! steps.check-branch-exists.outputs.exists }}
       - uses: Vent-Finance/branch_creator@v1.0.0
-        if: ${{ ! steps.check-branch-exists.outputs.exists }}
+        if: ${{ ! steps.cbe.outputs.exists }}
         with:
           name: master-patch/${{ github.sha }}
         env:
@@ -69,11 +68,17 @@ jobs:
           depth: 0
           ref: zig-master
       - name: check pr exists
+        id: cpe
         run: |
-          gh pr list -B zig-master -H master-patch/${{ github.sha }} | grep -q "no pull requests"
+          if gh pr list -B zig-master -H master-patch/${{ github.sha }} | grep -q "no pull requests"; then
+            echo "exists=false" >> $GITHUB_OUTPUT
+          else
+            echo "exists=true" >> $GITHUB_OUTPUT
+          fi
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: create pull request,
+        if: ${{ ! steps.cpe.outputs.exists }}
         run: |
           gh pr create -B zig-master -H master-patch/${{ github.sha }} --title 'Test commit ${{ github.sha }} with zig master' --body 'Created by Github action'
         env:
