@@ -30,17 +30,6 @@ jobs:
       artifact-output-paths: boxzer-out
     secrets:
       downloads-url: ${{ secrets.DOWNLOADS_URL }}
-  build-microzig-master:
-    if: ${{ ( github.event_name == 'pull_request' && github.base_ref == 'zig-master' ) || github.ref_name == 'zig-master' }}
-    name: Build with zig master
-    uses: ./.github/workflows/zig-build-base.yml
-    with:
-      zig-version: master
-      get-submodules: true
-      is-packaged: true
-      artifact-output-paths: boxzer-out
-    secrets:
-      downloads-url: ${{ secrets.DOWNLOADS_URL }}
   create-branch:
     if: ${{ github.event_name == 'push' && github.ref_name == 'main' }}
     name: Create Patch Branch
