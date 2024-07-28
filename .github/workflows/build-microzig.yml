@@ -2,7 +2,7 @@ name: Build Microzig
 
 on:
   push:
-    branches: [main, zig-master]
+    branches: [main]
     #    paths:
     #      - build.zig*
     #      - tools/**
@@ -10,7 +10,7 @@ on:
     #      - bsp/**
     #      - examples/**
   pull_request:
-    branches: [main, zig-master]
+    branches: [main]
     #    paths:
     #      - build.zig*
     #      - tools/**
@@ -95,38 +95,4 @@ jobs:
         run: |
           gh pr create -B zig-master -H master-patch/${{ github.sha }} --title 'Testing commit ${{ github.sha }} with zig master' --body 'Created by Github action'
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-  create-new-commit-for-ci:
-    needs: create-branch
-    runs-on: ubuntu-latest
-    permissions:
-      contents: write
-    outputs:
-      new-sha: ${{ steps.ac.outputs.sha }}
-    steps:
-      - name: checkout
-        uses: actions/checkout@v4
-      - name: add-file
-        run: |
-          echo "${{ needs.create-branch.outputs.branch }}" >> current-commit.txt
-      - name: add-commit
-        id: ac
-        run: |
-          git config user.name "$(git log -1 --pretty=format:'%an')"
-          git config user.email "$(git log -1 --pretty=format:'%ae')"
-          git add current-commit.txt
-          git commit -m "feat: added commit file (Github Actions)"
-          git push
-          echo "sha=$(git log -n 1 --pretty=format:"%H")" >> "$GITHUB_OUTPUT"
-  build-microzig-master-post-pr:
-    name: Build with master
-    uses: ./.github/workflows/zig-build-base.yml
-    needs: create-new-commit-for-ci
-    with:
-      zig-version: master
-      get-submodules: true
-      is-packaged: true
-      artifact-output-paths: boxzer-out
-      ref: ${{ needs.create-new-commit-for-ci.outputs.new-sha }}
-    secrets:
-      downloads-url: ${{ secrets.DOWNLOADS_URL }}
+          GITHUB_TOKEN: ${{ secrets.PR_CREATE_PAT }}

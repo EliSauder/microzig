@@ -1,0 +1,18 @@
+name: Build Microzig Master
+on:
+  push:
+    branches: [zig-master]
+  pull_request:
+    branches: [zig-master]
+
+jobs:
+  build-microzig-master-post-pr:
+    name: Build with master
+    uses: ./.github/workflows/zig-build-base.yml
+    with:
+      zig-version: master
+      get-submodules: true
+      is-packaged: true
+      artifact-output-paths: boxzer-out
+    secrets:
+      downloads-url: ${{ secrets.DOWNLOADS_URL }}
