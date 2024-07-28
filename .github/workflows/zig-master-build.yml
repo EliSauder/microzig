@@ -19,6 +19,8 @@ jobs:
         id: gmrp
         run: |
           echo "ref=$(gh pr list -B zig-master --limit 30 --json headRefName,number -q '[.[] | select(.headRefName | startswith("master-patch"))] | max_by(.number) | .headRefName)'" >> $GITHUB_OUTPUT
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   build-microzig-master-post-pr:
     name: Build with master
     needs: ["get-branch"]
