@@ -57,6 +57,8 @@ jobs:
           else
             echo "exists=false" >> $GITHUB_OUTPUT
           fi
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - uses: Vent-Finance/branch_creator@v1.0.0
         if: ${{ ! steps.cbe.outputs.exists }}
         with:
@@ -69,8 +71,12 @@ jobs:
           ref: zig-master
       - name: check pr exists
         id: cpe
+        # the gh pr list command prints to stderr if there are no prs, then
+        # prints to stdout if it find some. First redirect stderr to file, then
+        # if there is content in the file, the pr doesn't exist
         run: |
-          if gh pr list -B zig-master -H master-patch/${{ github.sha }} | grep -q "no pull requests"; then
+          gh pr list -B zig-master -H master-patch/${{ github.sha }} 2> check-pr-exists-output
+          if [[ -n $(cat check-pr-exists-output)]]; then 
             echo "exists=false" >> $GITHUB_OUTPUT
           else
             echo "exists=true" >> $GITHUB_OUTPUT
