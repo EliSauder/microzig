@@ -112,6 +112,8 @@ jobs:
       - name: add-commit
         id: ac
         run: |
+          git config user.name "$(git log -1 --pretty=format:'%an')"
+          git config user.email "$(git log -1 --pretty=format:'%ae')"
           git add current-commit.txt
           git commit --author "ZEG Github Action <>" -m "feat: added commit file"
           git push
