@@ -71,15 +71,11 @@ jobs:
           ref: master-patch/${{ github.sha }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - name: add-file
-        run: |
-          echo "master-patch/${{ github.sha }}" >> current-commit.txt
       - name: add-commit
         run: |
           git config user.name "$(git log -1 --pretty=format:'%an')"
           git config user.email "$(git log -1 --pretty=format:'%ae')"
-          git add current-commit.txt
-          git commit --author "ZEG Github Action <>" -m "feat: added commit file"
+          git commit --author "ZEG Github Action <>" -m "feat: added commit file" --allow-empty
           git push
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
