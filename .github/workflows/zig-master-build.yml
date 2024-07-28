@@ -23,7 +23,6 @@ jobs:
   #         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   build-microzig-master-post-pr:
     name: Build with master
-    needs: get-branch
     uses: ./.github/workflows/zig-build-base.yml
     with:
       zig-version: master
