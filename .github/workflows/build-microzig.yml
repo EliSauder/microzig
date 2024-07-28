@@ -56,8 +56,10 @@ jobs:
         run: |
           if [[ -z "$(git ls-remote --heads origin master-patch/${{ github.sha }})" ]]; then
             echo "exists=false" >> "$GITHUB_OUTPUT"
+            echo "exists=false"
           else
             echo "exists=true" >> "$GITHUB_OUTPUT"
+            echo "exists=true"
           fi
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -81,8 +83,10 @@ jobs:
           echo $(cat check-pr-exists-output)
           if [[ -z "$(cat check-pr-exists-output)" ]]; then 
             echo "exists=true" >> "$GITHUB_OUTPUT"
+            echo "exists=true"
           else
             echo "exists=false" >> "$GITHUB_OUTPUT"
+            echo "exists=false"
           fi
           rm check-pr-exists-output
         env:
