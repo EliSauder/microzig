@@ -50,7 +50,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: Vent-Fiance/branch_creator@v1
+      - uses: Vent-Finance/branch_creator@v1
         with:
           name: master-patch/${{ github.sha }}
         env:
