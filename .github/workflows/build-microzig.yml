@@ -30,6 +30,17 @@ jobs:
       artifact-output-paths: boxzer-out
     secrets:
       downloads-url: ${{ secrets.DOWNLOADS_URL }}
+  build-microzig-master:
+    if: ${{ ( github.event_name == 'pull_request' && github.base_ref == 'zig-master' ) || github.ref_name == 'zig-master' }}
+    name: Build with zig master
+    uses: ./.github/workflows/zig-build-base.yml
+    with:
+      zig-version: master
+      get-submodules: true
+      is-packaged: true
+      artifact-output-paths: boxzer-out
+    secrets:
+      downloads-url: ${{ secrets.DOWNLOADS_URL }}
   create-branch:
     if: ${{ github.event_name == 'push' && github.ref_name == 'main' }}
     name: Create Patch Branch
@@ -97,15 +108,12 @@ jobs:
           ref: ${{ needs.create-branch.outputs.branch }}
       - name: add-file
         run: |
-          echo "${{ needs.create-branch.outputs.branch }}" > current-commit.txt
+          echo "${{ needs.create-branch.outputs.branch }}" >> current-commit.txt
       - name: add-commit
+        id: ac
         run: |
-          git config user.name "$(git log -1 --pretty=format:'%an')"
-          git config user.email "$(git log -1 --pretty=format:'%ae')"
           git add current-commit.txt
-          git commit -m "feat: added commit file (Github Actions)"
-      - name: push
-        uses: ad-m/github-push-action@77c5b412c50b723d2a4fbc6d71fb5723bcd439aa
-        with:
-          ref: ${{ needs.create-branch.outputs.branch }}
-          github_token: ${{ secrets.PUSH_COMMIT }}
+          git commit --author "ZEG Github Action <>" -m "feat: added commit file"
+          git push
+        env:
+          GITHUB_TOKEN: ${{ secrets.PUSH_COMMIT }}

@@ -4,15 +4,30 @@ on:
     branches: [zig-master]
   pull_request:
     branches: [zig-master]
+  workflow_run:
+    workflows: ["Build Microzig"]
+    types:
+      - completed
 
 jobs:
+  get-branch:
+    runs-on: ubuntu-latest
+    outputs:
+      ref: ${{ steps.gmrp.outputs.ref }}
+    steps:
+      - name: get-most-recent-pr
+        id: gmrp
+        run: |
+          echo "ref=$(gh pr list -B zig-master --limit 30 --json headRefName,number -q '[.[] | select(.headRefName | startswith("master-patch"))] | max_by(.number) | .headRefName)'" >> $GITHUB_OUTPUT
   build-microzig-master-post-pr:
     name: Build with master
+    needs: ["get-branch"]
     uses: ./.github/workflows/zig-build-base.yml
     with:
       zig-version: master
       get-submodules: true
       is-packaged: true
       artifact-output-paths: boxzer-out
+      ref: ${{ needs.get-branch.outputs.ref }}
     secrets:
       downloads-url: ${{ secrets.DOWNLOADS_URL }}
