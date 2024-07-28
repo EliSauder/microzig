@@ -65,6 +65,24 @@ jobs:
         with:
           depth: 0
           ref: zig-master
+      - name: checkout
+        uses: actions/checkout@v4
+        with:
+          ref: master-patch/${{ github.sha }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: add-file
+        run: |
+          echo "master-patch/${{ github.sha }}" >> current-commit.txt
+      - name: add-commit
+        run: |
+          git config user.name "$(git log -1 --pretty=format:'%an')"
+          git config user.email "$(git log -1 --pretty=format:'%ae')"
+          git add current-commit.txt
+          git commit --author "ZEG Github Action <>" -m "feat: added commit file"
+          git push
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - id: cpe
         name: check pr exists
         # github actions pr only outputs when the query find something.
@@ -78,37 +96,10 @@ jobs:
           fi
           rm check-pr-exists-output
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.PR_CREATE_PAT }}
       - name: create pull request,
         if: steps.cpe.outputs.exists == 'false'
         run: |
           gh pr create -B zig-master -H master-patch/${{ github.sha }} --title 'Testing commit ${{ github.sha }} with zig master' --body 'Created by Github action'
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-  create-new-commit-for-ci:
-    needs: create-branch
-    runs-on: ubuntu-latest
-    permissions:
-      contents: write
-    steps:
-      - name: checkout
-        uses: actions/checkout@v4
-        with:
-          ref: ${{ needs.create-branch.outputs.branch }}
-        env:
-          GITHUB_TOKEN: ${{ secrets.PUSH_COMMIT }}
-      - name: add-file
-        run: |
-          echo "${{ needs.create-branch.outputs.branch }}" >> current-commit.txt
-      - name: add-commit
-        id: ac
-        run: |
-          git config --global credential.helper store
-          git credential approve <<< 'url=${{ github.repositoryUrl }} username="${{ github.actor }}" password="${{ secrets.PUSH_COMMIT }}"'
-          git config user.name "$(git log -1 --pretty=format:'%an')"
-          git config user.email "$(git log -1 --pretty=format:'%ae')"
-          git add current-commit.txt
-          git commit --author "ZEG Github Action <>" -m "feat: added commit file"
-          git push
-        env:
-          GITHUB_TOKEN: ${{ secrets.PUSH_COMMIT }}
+          GITHUB_TOKEN: ${{ secrets.PR_CREATE_PAT }}
