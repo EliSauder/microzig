@@ -83,23 +83,13 @@ jobs:
         id: should-upload
         shell: bash
         run: |
-          if [[ ! -z "${{ inputs.artifact-output-paths }}" ]]; then
-            echo "Output path is not empty"
-          else
-            echo "Output path is empty"
-          fi
-          if test -n "$(find . -maxdepth 1 -name '${{ inputs.artifact-output-paths }}' -print -quit)"; then
-            echo "Test for file succeeded"
-          else
-            echo "Test for file failed"
-          fi
           if [[ ! -z "${{ inputs.artifact-output-paths }}" ]] && test -n "$(find . -maxdepth 1 -name '${{ inputs.artifact-output-paths }}' -print -quit)"; then
             echo "SHOULD_UPLOAD=true" >> $GITHUB_OUTPUT; 
           else
             echo "SHOULD_UPLOAD=false" >> $GITHUB_OUTPUT; 
           fi
       - name: Upload Artifacts
-        if: ${{ steps.should-upload.outputs.SHOULD_UPLOAD == 'true' }}
+        if: ${{ steps.should-upload.outputs.SHOULD_UPLOAD == 'true' && inputs.github-artifact-name != '' }}
         uses: actions/upload-artifact@v4
         with:
           name: ${{ inputs.github-artifact-name }}

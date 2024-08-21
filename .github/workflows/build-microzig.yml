@@ -28,7 +28,6 @@ jobs:
       zig-version: 0.13.0
       get-submodules: true
       is-packaged: true
-      artifact-output-paths: boxzer-out
     secrets:
       downloads-url: ${{ secrets.DOWNLOADS_URL }}
   create-branch:
