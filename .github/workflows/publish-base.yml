@@ -57,6 +57,7 @@ jobs:
           script: |
             core.setFailed("Provided tag does not match github ref tag")
       - name: Download artifacts
+        id: download
         uses: actions/download-artifact@v4
         with:
           name: ${{ inputs.github-artifact-name }}
@@ -73,7 +74,7 @@ jobs:
         with:
           SSH_PRIVATE_KEY: ${{ secrets.ssh-key }}
           ARGS: "-vzrli"
-          SOURCE: ${{ inputs.source }}
+          SOURCE: ${{ steps.download.outputs.download-path }}/${{ inputs.source }}
           REMOTE_HOST: ${{ secrets.host }}
           REMOTE_USER: ${{ secrets.user }}
           REMOTE_PORT: ${{ secrets.port }}
@@ -83,16 +84,11 @@ jobs:
         shell: bash
         run: |
           mkdir -p "artifacts-${{ github.ref }}"
-          for i in ${{ inputs.source }}; do
+          for i in ${{ steps.download.outputs.download-path }}/${{ inputs.source }}; do
             if [[ -d "$i" ]]; then
               dirname="$(basename "$i")"
-              if [[ "$dirname" == "/" ]]; then
-                tar -czvf "${{ inputs.artifact }}.tar.gz" -C $i .
-                mv "${{ inputs.artifact }}.tar.gz" "artifacts-${{ github.ref }}"
-              else
-                tar -czvf "${{ inputs.artifact }}-$i.tar.gz" -C "$i" .
-                mv "${{ inputs.artifact }}-$i.tar.gz" "artifacts-${{ github.ref }}"
-              fi
+              tar -czvf "${{ inputs.artifact }}-$dirname.tar.gz" -C "$i" .
+              mv "${{ inputs.artifact }}-$dirname.tar.gz" "artifacts-${{ github.ref }}"
             else
               mv "$i" "artifacts-${{ github.ref }}" 
             fi
