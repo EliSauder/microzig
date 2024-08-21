@@ -31,7 +31,7 @@ jobs:
       artifact: microzig
       github-artifact-name: microzig-build
       artifact-target-name: "."
-      source: boxzer-out/
+      source: /
     secrets:
       ssh-key: ${{ secrets.DEPLOY_PRIVATE_KEY }}
       host: ${{ secrets.DEPLOY_HOST }}
