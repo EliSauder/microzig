@@ -22,6 +22,7 @@ jobs:
       downloads-url: ${{ secrets.DOWNLOADS_URL }}
   publish-microzig:
     uses: ./.github/workflows/publish-base.yml
+    needs: build-microzig
     concurrency:
       group: publish
       cancel-in-progress: false
