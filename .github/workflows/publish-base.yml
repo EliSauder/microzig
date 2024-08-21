@@ -85,8 +85,14 @@ jobs:
           mkdir -p "artifacts-${{ github.ref }}"
           for i in ${{ inputs.source }}; do
             if [[ -d "$i" ]]; then
-              tar -czvf "$i.tar.gz" -C "$i" .
-              mv "$i.tar.gz" "artifacts-${{ github.ref }}" 
+              dirname="$(basename "$i")"
+              if [[ "$dirname" == "/" ]]; then
+                tar -czvf "${{ inputs.artifact }}.tar.gz" -C $i .
+                mv "${{ inputs.artifact }}.tar.gz" "artifacts-${{ github.ref }}"
+              else
+                tar -czvf "${{ inputs.artifact }}-$i.tar.gz" -C "$i" .
+                mv "${{ inputs.artifact }}-$i.tar.gz" "artifacts-${{ github.ref }}"
+              fi
             else
               mv "$i" "artifacts-${{ github.ref }}" 
             fi
