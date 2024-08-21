@@ -37,7 +37,7 @@ on:
         default: ""
       # The path that we should upload artifacts from
       artifact-output-paths:
-        required: true
+        required: false
         type: string
         default: ""
       ref:
