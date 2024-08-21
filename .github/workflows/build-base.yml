@@ -89,7 +89,7 @@ jobs:
             echo "SHOULD_UPLOAD=false" >> $GITHUB_OUTPUT; 
           fi
       - name: Upload Artifacts
-        if: ${{ steps.should-upload.outputs.SHOULD_UPLOAD }}
+        if: ${{ steps.should-upload.outputs.SHOULD_UPLOAD == true }}
         uses: actions/upload-artifact@v4
         with:
           name: ${{ inputs.github-artifact-name }}
