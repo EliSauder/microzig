@@ -27,7 +27,7 @@ on:
         type: string
         default: ""
       # The target path that goes before the artifact-target-name
-      # {artifact | artifact-target-name}/{target-path}
+      # {artifact | {target-path}/{artifact-target-name}
       target-path:
         required: false
         type: string
@@ -64,7 +64,7 @@ jobs:
       - name: Get Target
         id: get-target
         run: |
-          if [ -z ${{ inputs.artifact-target-name }} ]; then 
+          if [ -z "${{ inputs.artifact-target-name }}" ]; then 
             echo "PUB_TARGET=${{ inputs.artifact }}" >> $GITHUB_OUTPUT; 
           else
             echo "PUB_TARGET=${{ inputs.artifact-target-name }}" >> $GITHUB_OUTPUT;
