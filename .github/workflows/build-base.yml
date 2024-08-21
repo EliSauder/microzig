@@ -80,7 +80,7 @@ jobs:
         if: ${{ inputs.is-packaged && runner.os == 'macOS' }}
         run: zig build package -- "${{ secrets.downloads-url }}"
       - name: Upload Artifacts
-        if: ${{ inputs.artifact-output-paths == '' }}
+        if: ${{ inputs.artifact-output-paths != '' }}
         uses: actions/upload-artifact@v4
         with:
           name: ${{ inputs.github-artifact-name }}
