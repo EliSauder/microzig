@@ -82,7 +82,7 @@ jobs:
         if: ${{ startsWith(github.ref, 'refs/tags/') && endsWith(github.ref, inputs.tag) }}
         shell: bash
         run: |
-          mkdir "artifacts-${{ github.ref }}"
+          mkdir -p "artifacts-${{ github.ref }}"
           for i in ${{ inputs.source }}; do
             if [[ -d "$i" ]]; then
               tar -czvf "$i.tar.gz" -C "$i" .
