@@ -16,7 +16,7 @@ jobs:
       zig-version: 0.13.0
       get-submodules: true
       is-packaged: true
-      github-artifact-name: microzig
+      github-artifact-name: microzig-build
       artifact-output-paths: boxzer-out
     secrets:
       downloads-url: ${{ secrets.DOWNLOADS_URL }}
