@@ -6,7 +6,8 @@ permissions:
 on:
   push:
     tags:
-      - "microzig-*.*.*"
+      - "v*.*.*"
+      - "v*.*.*-*"
 
 jobs:
   build-microzig:
