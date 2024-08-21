@@ -78,11 +78,24 @@ jobs:
           REMOTE_USER: ${{ secrets.user }}
           REMOTE_PORT: ${{ secrets.port }}
           TARGET: ${{ steps.get-target.outputs.PUB_TARGET }}/${{ inputs.target-path }}
+      - name: Handle Folder Release Artifact
+        if: ${{ startsWith(github.ref, 'refs/tags/') && endsWith(github.ref, inputs.tag) }}
+        shell: bash
+        run: |
+          mkdir "artifacts-${{ github.ref }}"
+          for i in ${{ inputs.source }}; do
+            if [[ -d "$i" ]]; then
+              tar -czvf "$i.tar.gz" -C "$i" .
+              mv "$i.tar.gz" "artifacts-${{ github.ref }}" 
+            else
+              mv "$i" "artifacts-${{ github.ref }}" 
+            fi
+          done
       - name: Create Release Draft
         if: ${{ startsWith(github.ref, 'refs/tags/') && endsWith(github.ref, inputs.tag) }}
         uses: ncipollo/release-action@v1
         with:
-          artifacts: ${{ inputs.source }}/*
+          artifacts: "artifacts-${{ github.ref }}/*"
           artifactErrorsFailBuild: true
           draft: true
           generateReleaseNotes: true
