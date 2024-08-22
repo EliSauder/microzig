@@ -77,18 +77,18 @@ jobs:
         shell: bash
         run: |
           mkdir -p "artifacts-${{ github.sha }}"
-          for i in "${{ steps.download.outputs.download-path }}/${{ inputs.source-path }}*"; do
-            echo "Artifact path '$i'"
+          for i in "${{ steps.download.outputs.download-path }}/${{ inputs.source-path }}"/*; do
+            echo "Artifact path $i"
             if [[ -d "$i" ]]; then
               echo "Artifact is path"
               dirname="$(basename "$i")"
-              echo "Artifact directory '$dirname'. Compressing folder to '${{ inputs.artifact-name }}-${dirname}.tar.gz'"
+              echo "Artifact directory $dirname. Compressing folder to ${{ inputs.artifact-name }}-${dirname}.tar.gz"
               tar -czvf "${{ inputs.artifact-name }}-${dirname}.tar.gz" -C "$i" .
-              echo "Moving tar to 'artifacts-${{ github.sha }}'"
+              echo "Moving tar to artifacts-${{ github.sha }}"
               mv "${{ inputs.artifact-name }}-${dirname}.tar.gz" "artifacts-${{ github.sha }}"
             else
               echo "Artifact is file"
-              echo "Move to: 'artifacts-${{ github.sha }}'"
+              echo "Move to: artifacts-${{ github.sha }}"
               mv "$i" "artifacts-${{ github.sha }}" 
             fi
           done
