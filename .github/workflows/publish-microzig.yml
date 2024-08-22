@@ -28,11 +28,11 @@ jobs:
       cancel-in-progress: false
     with:
       tag: ${{ github.ref_name }}
-      artifact: microzig
+      artifact-name: microzig
       github-artifact-name: microzig-build
-      artifact-target-name: "."
-      source: /
+      source-path: /
     secrets:
+      artifact-path: "."
       ssh-key: ${{ secrets.DEPLOY_PRIVATE_KEY }}
       host: ${{ secrets.DEPLOY_HOST }}
       port: ${{ secrets.DEPLOY_PORT }}
