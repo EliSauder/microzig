@@ -79,7 +79,7 @@ jobs:
           mkdir -p "artifacts-${{ github.ref }}"
           for i in "${{ steps.download.outputs.download-path }}/${{ inputs.source-path }}*"; do
             if [[ -d "$i" ]]; then
-              dirname="$(basename $i")"
+              dirname="$(basename "$i")"
               tar -czvf "${{ inputs.artifact-name }}-${dirname}.tar.gz" -C "$i" .
               mv "${{ inputs.artifact-name }}-${dirname}.tar.gz" "artifacts-${{ github.ref }}"
             else
