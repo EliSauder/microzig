@@ -61,7 +61,7 @@ jobs:
         shell: bash
         id: get-source-path
         run: |
-          echo "path=$(realpath -s --relative-to="${{GITHUB_WORKSPACE}}" "${{ steps.download.outputs.download-path }}/${{ inputs.source-path }}")" >> $GITHUB_OUTPUT
+          echo "path=$(realpath -s --relative-to="${{ github.workspace }}" "${{ steps.download.outputs.download-path }}/${{ inputs.source-path }}")" >> $GITHUB_OUTPUT
       - name: Publish Release
         uses: easingthemes/ssh-deploy@main
         with:
