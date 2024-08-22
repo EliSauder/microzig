@@ -32,7 +32,7 @@ jobs:
       github-artifact-name: microzig-build
       source-path: /
     secrets:
-      artifact-path: "."
+      target-path: "."
       ssh-key: ${{ secrets.DEPLOY_PRIVATE_KEY }}
       host: ${{ secrets.DEPLOY_HOST }}
       port: ${{ secrets.DEPLOY_PORT }}
