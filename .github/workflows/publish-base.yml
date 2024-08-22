@@ -57,12 +57,17 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: ${{ inputs.github-artifact-name }}
+      - name: Get Source Path
+        shell: bash
+        id: get-source-path
+        run: |
+          echo "path=$(realpath -s --relative-to="${{GITHUB_WORKSPACE}}" "${{ steps.download.outputs.download-path }}/${{ inputs.source-path }}")" >> $GITHUB_OUTPUT
       - name: Publish Release
         uses: easingthemes/ssh-deploy@main
         with:
           SSH_PRIVATE_KEY: ${{ secrets.ssh-key }}
           ARGS: "-vzrli"
-          SOURCE: ${{ steps.download.outputs.download-path }}/${{ inputs.source-path }}
+          SOURCE: ${{ steps.get-source-path.outputs.path }}
           REMOTE_HOST: ${{ secrets.host }}
           REMOTE_USER: ${{ secrets.user }}
           REMOTE_PORT: ${{ secrets.port }}
