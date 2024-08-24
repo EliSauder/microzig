@@ -7,7 +7,7 @@ const example_dep_names: []const []const u8 = &.{
     "examples/nordic/nrf5x",
     "examples/nxp/lpc",
     "examples/microchip/atsam",
-    //"examples/microchip/avr",
+    "examples/microchip/avr",
     "examples/gigadevice/gd32",
     "examples/stmicro/stm32",
     //"examples/espressif/esp",
@@ -38,7 +38,7 @@ pub fn build(b: *Build) void {
         b.getInstallStep().dependOn(example_dep_install_step);
     }
 
-    const boxzer_dep = b.dependency("boxzer", .{});
+    const boxzer_dep = b.dependency("boxzer", .{ .optimize = .ReleaseSafe });
     const boxzer_exe = boxzer_dep.artifact("boxzer");
     const boxzer_run = b.addRunArtifact(boxzer_exe);
     if (b.args) |args|
