@@ -112,6 +112,7 @@ jobs:
       pull-requests: write
       contents: read
     steps:
+      - uses: actions/checkout@v4
       # Check if the PR already exists, this will be used to conditionally
       # create the PR.
       - id: cpe
