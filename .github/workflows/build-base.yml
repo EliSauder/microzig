@@ -116,8 +116,8 @@ jobs:
       # name to upload it to
       - name: Upload Artifacts
         if: |
-          ${{ steps.should-upload.outputs.SHOULD_UPLOAD == 'true' 
-              && inputs.github-artifact-name != '' }}
+          steps.should-upload.outputs.SHOULD_UPLOAD == 'true' 
+            && inputs.github-artifact-name != ''
         uses: actions/upload-artifact@v4
         with:
           name: ${{ inputs.github-artifact-name }}
