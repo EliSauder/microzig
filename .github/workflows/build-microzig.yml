@@ -22,8 +22,10 @@ on:
 jobs:
   build-microzig:
     if: |
-      ( github.event_name == 'pull_request' && github.base_ref == 'main' ) 
-      || github.ref_name == 'main'
+      ${{ 
+        ( github.event_name == 'pull_request' && github.base_ref == 'main' ) 
+        || github.ref_name == 'main' 
+      }}
     name: Build
     uses: ./.github/workflows/build-base.yml
     with:
@@ -130,7 +132,7 @@ jobs:
           cat check-exists-out
           rm check-exists-out
         env:
-          GITHUB_TOKEN: ${{ secrets.PR_CREATE_PAT }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       # Create the actual PR if it doesn't already exist
       - name: create pull request,
         if: steps.cpe.outputs.exists == 'false'
@@ -139,4 +141,4 @@ jobs:
             --title 'Testing commit ${{ github.sha }} with zig master' \
             --body 'Created by Github action'
         env:
-          GITHUB_TOKEN: ${{ secrets.PR_CREATE_PAT }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
