@@ -120,7 +120,7 @@ jobs:
         # So, if the output is empty, pr does not exist
         run: |
           gh pr list -B zig-master \
-            -H "${{ jobs.create-branch.outputs.branch }}" \
+            -H "${{ needs.create-branch.outputs.branch }}" \
             2> check-pr-exists-output
           if [[ -z "$(cat check-pr-exists-output)" ]]; then 
             echo "exists=false" >> "$GITHUB_OUTPUT"
