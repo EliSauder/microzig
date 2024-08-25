@@ -90,7 +90,7 @@ jobs:
         shell: bash
         id: semver
         run: |
-          if [[ ${{ inputs.ref }} ~= "^v?(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)(-((0|[1-9][0-9]*|[0-9]*[a-zA-Z-][0-9a-zA-Z-]*)(\.(0|[1-9][0-9]*|[0-9]*[a-zA-Z-][0-9a-zA-Z-]*))*))?(\+([0-9a-zA-Z-]+(\.[0-9a-zA-Z-]+)*))?" ]]; then
+          if [[ "${{ inputs.ref }}" ~= ^v?(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)(-((0|[1-9][0-9]*|[0-9]*[a-zA-Z-][0-9a-zA-Z-]*)(\.(0|[1-9][0-9]*|[0-9]*[a-zA-Z-][0-9a-zA-Z-]*))*))?(\+([0-9a-zA-Z-]+(\.[0-9a-zA-Z-]+)*))? ]]; then
             echo "issemver=true" >> "$GITHUB_OUTPUT"
             echo "major=${BASH_REMATCH[1]}" >> "$GITHUB_OUTPUT"
             echo "minor=${BASH_REMATCH[2]}" >> "$GITHUB_OUTPUT"
