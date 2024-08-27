@@ -1,0 +1,42 @@
+name: Deploy
+
+permissions:
+  contents: write
+
+on:
+  push:
+    tags:
+      - "v*.*.*"
+      - "v*.*.*-*"
+
+jobs:
+  # Build the project to ensure it works. Also to get the binaries.
+  build-microzig:
+    uses: ./.github/workflows/build-base.yml
+    with:
+      zig-version: 0.13.0
+      get-submodules: true
+      is-packaged: true
+      github-artifact-name: microzig-build
+      artifact-output-paths: boxzer-out
+      ref: ${{ github.ref_name }}
+    secrets:
+      downloads-url: ${{ secrets.BOXZER_DOWNLOADS_URL }}
+  # Publish microzig
+  publish-microzig:
+    uses: ./.github/workflows/publish-base.yml
+    needs: build-microzig
+    concurrency:
+      group: publish
+      cancel-in-progress: false
+    with:
+      tag: ${{ github.ref_name }}
+      artifact-name: microzig
+      github-artifact-name: microzig-build
+      source-path: /
+    secrets:
+      target-path: ${{ secrets.DEPLOY_MZ_ROOT_DATA_PATH }}
+      ssh-key: ${{ secrets.DEPLOY_MZ_PRIVATE_KEY }}
+      host: ${{ secrets.DEPLOY_MZ_HOST }}
+      port: ${{ secrets.DEPLOY_MZ_PORT }}
+      user: ${{ secrets.DEPLOY_MZ_USER }}
