@@ -68,10 +68,10 @@ jobs:
       - name: Copy Root, Build, Core, Tools
         shell: bash
         run: |
-          mv ${{ steps.get-glob-paths.outputs.source-path }}/microzig-*.tar.gz "${{ steps.base-folders.output.path }}/microzig.tar.gz"
-          mv ${{ steps.get-glob-paths.outputs.source-path }}/microzig-*/build-*.tar.gz "${{ steps.base-folders.output.path }}/microzig-build.tar.gz"
-          mv ${{ steps.get-glob-paths.outputs.source-path }}/microzig-*/core-*.tar.gz "${{ steps.base-folders.output.path }}/microzig-core.tar.gz"
-          mv ${{ steps.get-glob-paths.outputs.source-path }}/microzig-*/build/definitions-*.tar.gz "${{ steps.base-folders.output.path }}/build/definitions.tar.gz"
+          mv ${{ steps.get-glob-paths.outputs.source-path }}/microzig-*.tar.gz "${{ steps.base-folders.outputs.path }}/microzig.tar.gz"
+          mv ${{ steps.get-glob-paths.outputs.source-path }}/microzig-*/build-*.tar.gz "${{ steps.base-folders.outputs.path }}/microzig-build.tar.gz"
+          mv ${{ steps.get-glob-paths.outputs.source-path }}/microzig-*/core-*.tar.gz "${{ steps.base-folders.outputs.path }}/microzig-core.tar.gz"
+          mv ${{ steps.get-glob-paths.outputs.source-path }}/microzig-*/build/definitions-*.tar.gz "${{ steps.base-folders.outputs.path }}/build/definitions.tar.gz"
       - name: Move examples, bsp
         shell: bash
         run: |
