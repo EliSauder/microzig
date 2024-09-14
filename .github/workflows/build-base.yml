@@ -43,7 +43,7 @@ on:
         description: |
           The name to use for the github actifact that will be uploaded.
       # The path that we should upload artifacts from
-      artifact-output-paths:
+      artifact-output-path:
         required: false
         type: string
         default: ""
@@ -169,10 +169,7 @@ jobs:
         id: should-upload
         shell: bash
         run: |
-          if [[ ! -z "${{ inputs.artifact-output-paths }}" ]] \
-                && test -n "$(find . -maxdepth 1 \
-                                -name '${{ inputs.artifact-output-paths }}' \
-                                -print -quit)"; then
+          if [[ ! -z "${{ inputs.artifact-output-path }}" ]]; then
             echo "SHOULD_UPLOAD=true" >> $GITHUB_OUTPUT; 
           else
             echo "SHOULD_UPLOAD=false" >> $GITHUB_OUTPUT; 
@@ -186,4 +183,4 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: ${{ inputs.github-artifact-name }}
-          path: ${{ inputs.artifact-output-paths }}
+          path: ${{ inputs.artifact-output-path }}

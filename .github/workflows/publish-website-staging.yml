@@ -19,7 +19,7 @@ jobs:
       zig-version: 0.13.0
       get-submodules: true
       github-artifact-name: website-build
-      artifact-output-paths: website/zig-out
+      artifact-output-path: website/zig-out
       working-directory: website
   # Publish microzig
   publish-website:
