@@ -80,6 +80,7 @@ jobs:
       - name: Rename examples, bsp
         shell: bash
         run: |
+          sudo apt-get install rename
           rename 's/-0.0.0//g' ${{ steps.get-glob-paths.outputs.output-path }}/examples/*
           rename 's/-0.0.0//g' ${{ steps.get-glob-paths.outputs.output-path }}/bsp/*
       - name: Upload Artifacts
