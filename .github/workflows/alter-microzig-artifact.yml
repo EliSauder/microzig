@@ -57,7 +57,7 @@ jobs:
           echo "path=./output/zig-${{ inputs.zig-version }}/microzig-${{ inputs.microzig-version }}/" >> $GITHUB_OUTPUT
           mkdir "./output/zig-${{ inputs.zig-version }}/microzig-${{ inputs.microzig-version }}/bsp/"
           mkdir "./output/zig-${{ inputs.zig-version }}/microzig-${{ inputs.microzig-version }}/build/"
-          mkdir "./output/zig-${{ inputs.zig-version }}/microzig-${{ inputs.microzig-version }}/example/"
+          mkdir "./output/zig-${{ inputs.zig-version }}/microzig-${{ inputs.microzig-version }}/examples/"
           mkdir "./output/zig-${{ inputs.zig-version }}/microzig-${{ inputs.microzig-version }}/tools/"
       - name: Get glob safe base paths
         id: get-glob-paths
