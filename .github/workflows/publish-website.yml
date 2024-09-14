@@ -24,7 +24,7 @@ jobs:
   # Publish microzig
   publish-website:
     uses: ./.github/workflows/publish-base.yml
-    needs: build-microzig
+    needs: build-website
     concurrency:
       group: publish
       cancel-in-progress: false

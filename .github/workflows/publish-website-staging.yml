@@ -24,7 +24,7 @@ jobs:
   # Publish microzig
   publish-website:
     uses: ./.github/workflows/publish-base.yml
-    needs: build-microzig
+    needs: build-website
     concurrency:
       group: publish
       cancel-in-progress: false
@@ -39,6 +39,7 @@ jobs:
       user: ${{ secrets.DEPLOY_WS_USER }}
   pr-comment:
     runs-on: ubuntu-latest
+    needs: publish-website
     permissions:
       pull-requests: write
     steps:
