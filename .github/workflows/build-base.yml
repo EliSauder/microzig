@@ -55,6 +55,11 @@ on:
         type: string
         default: ""
         description: A sepcific ref to build for (i.e. a version or commit)
+      zig-args:
+        required: false
+        type: string
+        default: ""
+        description: Arguments to add to the zig build command
     secrets:
       # The downloads url for the packaging step. This is used in boxzer to
       # fill in the manifest downloads location
@@ -152,7 +157,7 @@ jobs:
         with:
           version: ${{ inputs.zig-version }}
       - name: Build
-        run: zig build -Doptimize=ReleaseSmall
+        run: zig build ${{ inputs.zig-args }}
         working-directory: ${{ inputs.working-directory }}
       - name: Package
         if: ${{ inputs.is-packaged && runner.os == 'macOS' }}
