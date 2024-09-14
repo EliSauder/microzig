@@ -66,25 +66,25 @@ on:
     outputs:
       issemver:
         description: Whether or not it was built with a semver
-        value: ${{ jobs.semver.outputs.issemver }}
+        value: ${{ jobs.build-zig.outputs.issemver }}
       major:
         description: The major version of the semver
-        value: ${{ jobs.semver.outputs.major }}
+        value: ${{ jobs.build-zig.outputs.major }}
       minor:
         description: The minor version of the semver
-        value: ${{ jobs.semver.outputs.minor }}
+        value: ${{ jobs.build-zig.outputs.minor }}
       patch:
         description: The patch version of the semver
-        value: ${{ jobs.semver.outputs.patch }}
+        value: ${{ jobs.build-zig.outputs.patch }}
       prerelease:
         description: The prerelease info of the semver
-        value: ${{ jobs.semver.outputs.prerelease }}
+        value: ${{ jobs.build-zig.outputs.prerelease }}
       build:
         description: The build info of the semver
-        value: ${{ jobs.semver.outputs.build }}
+        value: ${{ jobs.build-zig.outputs.build }}
       version:
         description: The full semver string
-        value: ${{ jobs.semver.outputs.version }}
+        value: ${{ jobs.build-zig.outputs.version }}
 
 jobs:
   build-zig:
@@ -92,6 +92,14 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
+    outputs:
+      issemver: ${{ steps.semver.outputs.issemver }}
+      major: ${{ steps.semver.outputs.major }}
+      minor: ${{ steps.semver.outputs.minor }}
+      patch: ${{ steps.semver.outputs.patch }}
+      prerelease: ${{ steps.semver.outputs.prerelease }}
+      build: ${{ steps.semver.outputs.build }}
+      version: ${{ steps.semver.outputs.version }}
     steps:
       # If we just want to use the current commit, simply run a checkout
       - name: Checkout
