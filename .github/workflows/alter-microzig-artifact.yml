@@ -75,13 +75,13 @@ jobs:
       - name: Move examples, bsp
         shell: bash
         run: |
-          mv ${{ steps.get-glob-paths.outputs.source-path }}/microzig-*/bsp/*/*.tar.gz "${{ steps.base-folders.output.path }}/bsp/"
-          mv ${{ steps.get-glob-paths.outputs.source-path }}/microzig-*/examples/*/*.tar.gz "${{ steps.base-folders.output.path }}/examples/"
+          mv ${{ steps.get-glob-paths.outputs.source-path }}/microzig-*/bsp/*/*.tar.gz "${{ steps.base-folders.outputs.path }}/bsp/"
+          mv ${{ steps.get-glob-paths.outputs.source-path }}/microzig-*/examples/*/*.tar.gz "${{ steps.base-folders.outputs.path }}/examples/"
       - name: Rename examples, bsp
         shell: bash
         run: |
-          rename 's/-0.0.0//g' ${{ steps.get-glob-paths.output.output-path }}/examples/*
-          rename 's/-0.0.0//g' ${{ steps.get-glob-paths.output.output-path }}/bsp/*
+          rename 's/-0.0.0//g' ${{ steps.get-glob-paths.outputs.output-path }}/examples/*
+          rename 's/-0.0.0//g' ${{ steps.get-glob-paths.outputs.output-path }}/bsp/*
       - name: Upload Artifacts
         uses: actions/upload-artifact@v4
         with:
