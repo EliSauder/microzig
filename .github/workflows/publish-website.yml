@@ -28,7 +28,6 @@ jobs:
       group: publish
       cancel-in-progress: false
     with:
-      artifact-name: website
       github-artifact-name: website-build
       source-path: /
     secrets:
