@@ -189,7 +189,7 @@ jobs:
         if: |
           steps.should-upload.outputs.SHOULD_UPLOAD == 'true' 
             && inputs.github-artifact-name != '' 
-            && ( runner.os == inputs.target-os || inputs.target-os == "" )
+            && ( runner.os == inputs.target-os || inputs.target-os == '' )
         uses: actions/upload-artifact@v4
         with:
           name: ${{ inputs.github-artifact-name }}
