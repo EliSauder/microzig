@@ -163,11 +163,17 @@ jobs:
         with:
           version: ${{ inputs.zig-version }}
       - name: Build
-        run: zig build ${{ inputs.zig-args }}
-        working-directory: ${{ inputs.working-directory }}
+        run: |
+          zig build ${{ inputs.zig-args }}
+          echo "List workign dir"
+          pwd
+          echo "List files in dir"
+          ls -a
+        working-directory: ./${{ inputs.working-directory }}
       - name: Package
         if: ${{ inputs.is-packaged && runner.os == 'macOS' }}
         run: zig build package -- "${{ secrets.downloads-url }}"
+        working-directory: ./${{ inputs.working-directory }}
       # We use whether or not an artifact output path is provided and whether
       # or not there is actually anything in that directory to know whether or
       # not there is anything to upload.
