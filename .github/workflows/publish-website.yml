@@ -20,7 +20,7 @@ jobs:
       get-submodules: true
       target-os: Linux
       github-artifact-name: website-build
-      artifact-output-path: website/zig-out
+      artifact-output-path: zig-out
       working-directory: website
   # Publish microzig
   publish-website:
