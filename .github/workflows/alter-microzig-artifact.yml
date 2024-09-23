@@ -80,28 +80,8 @@ jobs:
       - name: Rename examples, bsp
         shell: bash
         run: |
-          # The find command just gets a list of the files. We use this over a
-          # * to prevent unwanted globbing and to handle potential whitespace
-          # in names
-          for f in "$(find ${{ steps.base-folders.outputs.path }}/examples -type f)"; do
-            # This renames only the filename portion of the file while leaving
-            # the directory portion alone
-            echo "file: $f"
-            echo "dirname: $(dirname $f)"
-            echo "basename: $(basename $f)"
-            echo "new filename: $(basename $f | sed 's/-.*\.tar\.gz/-examples.tar.gz/g')"
-            echo "new filepath: $(dirname $f)/$(basename $f | sed 's/-.*\.tar\.gz/-examples.tar.gz/g')"
-            mv "$f" "$(dirname $f)/$(basename $f | sed 's/-.*\.tar\.gz/-examples.tar.gz/g')"
-          done
-          # This is the same as above but for bsp
-          for f in "$(find ${{ steps.base-folders.outputs.path }}/bsp -type f)"; do
-            echo "file: $f"
-            echo "dirname: $(dirname $f)"
-            echo "basename: $(basename $f)"
-            echo "new filename: $(basename $f | sed 's/-.*\.tar\.gz/-examples.tar.gz/g')"
-            echo "new filepath: $(dirname $f)/$(basename $f | sed 's/-.*\.tar\.gz/-examples.tar.gz/g')"
-            mv "$f" "$(dirname $f)/$(basename $f | sed 's/-.*\.tar\.gz/-bsp.tar.gz/g')"
-          done
+          find "${{ steps.base-folders.outputs.path }}/examples" -type f -exec mv "{}" "$(dirname "{}")/$(basename "{}" | sed 's/-.*\.tar\.gz/-bsp.tar.gz/g')" {} \;
+          find "${{ steps.base-folders.outputs.path }}/bsp" -type f -exec mv "{}" "$(dirname "{}")/$(basename "{}" | sed 's/-.*\.tar\.gz/-bsp.tar.gz/g')" {} \;
       - name: Upload Artifacts
         uses: actions/upload-artifact@v4
         with:
