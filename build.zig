@@ -7,7 +7,7 @@ const example_dep_names: []const []const u8 = &.{
     "examples/nordic/nrf5x",
     "examples/nxp/lpc",
     "examples/microchip/atsam",
-    //"examples/microchip/avr",
+    "examples/microchip/avr",
     "examples/gigadevice/gd32",
     "examples/stmicro/stm32",
     //"examples/espressif/esp",
@@ -38,7 +38,7 @@ pub fn build(b: *Build) void {
         b.getInstallStep().dependOn(example_dep_install_step);
     }
 
-    const boxzer_dep = b.dependency("boxzer", .{});
+    const boxzer_dep = b.dependency("boxzer", .{ .optimize = .ReleaseSafe });
     const boxzer_exe = boxzer_dep.artifact("boxzer");
     const boxzer_run = b.addRunArtifact(boxzer_exe);
     if (b.args) |args|
@@ -47,9 +47,50 @@ pub fn build(b: *Build) void {
     const package_step = b.step("package", "Package monorepo using boxzer");
     package_step.dependOn(&boxzer_run.step);
 
-    //const website_dep = b.dependency("website", .{});
-    //const website_step = b.step("website", "Build website");
-    //website_step.dependOn(website_dep.builder.getInstallStep());
+    const exe_targets: []const std.Target.Query = &.{
+        .{ .cpu_arch = .aarch64, .os_tag = .macos },
+        .{ .cpu_arch = .aarch64, .os_tag = .linux },
+        .{ .cpu_arch = .aarch64, .os_tag = .windows },
+        .{ .cpu_arch = .x86_64, .os_tag = .macos },
+        .{ .cpu_arch = .x86_64, .os_tag = .linux, .abi = .musl },
+        .{ .cpu_arch = .x86_64, .os_tag = .windows },
+    };
+
+    const release_regz_step = b.step("release-regz", "Generate the release binaries for regz");
+
+    const release_uf2_step = b.step("release-uf2", "Generate the release binaries for uf2");
+
+    for (exe_targets) |t| {
+        const release_target = b.resolveTargetQuery(t);
+
+        const regz_dep = b.dependency("tools/regz", .{
+            .optimize = .ReleaseSafe,
+            .target = release_target,
+        });
+        const regz_artifact = regz_dep.artifact("regz");
+        const regz_target_output = b.addInstallArtifact(regz_artifact, .{
+            .dest_dir = .{
+                .override = .{
+                    .custom = t.zigTriple(b.allocator) catch unreachable,
+                },
+            },
+        });
+        release_regz_step.dependOn(&regz_target_output.step);
+
+        const uf2_dep = b.dependency("tools/uf2", .{
+            .optimize = .ReleaseSafe,
+            .target = release_target,
+        });
+        const uf2_artifact = uf2_dep.artifact("elf2uf2");
+        const uf2_target_output = b.addInstallArtifact(uf2_artifact, .{
+            .dest_dir = .{
+                .override = .{
+                    .custom = t.zigTriple(b.allocator) catch unreachable,
+                },
+            },
+        });
+        release_uf2_step.dependOn(&uf2_target_output.step);
+    }
 
     const parts_db = generate_parts_db(b) catch @panic("OOM");
     const parts_db_json = b.addInstallFile(parts_db, "parts-db.json");
@@ -58,7 +99,9 @@ pub fn build(b: *Build) void {
     const test_bsps_step = b.step("run-bsp-tests", "Run all platform agnostic tests for BSPs");
     inline for (bsps) |bsp| {
         const bsp_dep = b.dependency(bsp[0], .{});
-        test_bsps_step.dependOn(&bsp_dep.builder.top_level_steps.get("test").?.step);
+        if (bsp_dep.builder.top_level_steps.get("test")) |test_step| {
+            test_bsps_step.dependOn(&test_step.step);
+        }
     }
 }
 
@@ -90,6 +133,8 @@ const PartsDb = struct {
 fn generate_parts_db(b: *Build) !Build.LazyPath {
     var chips = std.ArrayList(PartsDb.Chip).init(b.allocator);
     var boards = std.ArrayList(PartsDb.Board).init(b.allocator);
+
+    @setEvalBranchQuota(20000);
     inline for (bsps) |bsp| {
         const chips_start_idx = chips.items.len;
         inline for (@typeInfo(@field(bsp[1], "chips")).Struct.decls) |decl| {
