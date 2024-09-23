@@ -53,7 +53,7 @@ on:
 
 jobs:
   publish:
-    runs-on: macos-latest
+    runs-on: ubuntu-latest
     steps:
       # If this is somehow not run from a tag, fail. This is a remainder from
       # when the build side and publish side were done in one workflow.
