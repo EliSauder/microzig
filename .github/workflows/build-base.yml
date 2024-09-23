@@ -181,6 +181,10 @@ jobs:
         id: should-upload
         shell: bash
         run: |
+          echo "List working dir"
+          pwd
+          echo "List files in dir"
+          ls -a
           if [[ ! -z "${{ inputs.artifact-output-path }}" ]] \
                 && test -n "$(find . -maxdepth 1 \
                                 -name '${{ inputs.artifact-output-path }}' \
