@@ -165,10 +165,6 @@ jobs:
       - name: Build
         run: |
           zig build ${{ inputs.zig-args }}
-          echo "List workign dir"
-          pwd
-          echo "List files in dir"
-          ls -a
         working-directory: ./${{ inputs.working-directory }}
       - name: Package
         if: ${{ inputs.is-packaged && runner.os == 'macOS' }}
@@ -181,13 +177,8 @@ jobs:
         id: should-upload
         shell: bash
         run: |
-          echo "List working dir"
-          pwd
-          echo "List files in dir"
-          ls -a
           if [[ ! -z "${{ inputs.artifact-output-path }}" ]] \
-                && test -n "$(find . -maxdepth 1 \
-                                -name '${{ inputs.artifact-output-path }}' \
+                && test -n "$(find ${{ inputs.artifact-output-path }} -maxdepth 1 \
                                 -print -quit)"; then
             echo "SHOULD_UPLOAD=true" >> $GITHUB_OUTPUT; 
           else
