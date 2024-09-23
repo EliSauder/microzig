@@ -80,8 +80,8 @@ jobs:
       - name: Rename examples, bsp
         shell: bash
         run: |
-          find "${{ steps.base-folders.outputs.path }}/examples" -type f -exec mv "{}" "$(dirname "{}")/$(basename "{}" | sed 's/-.*\.tar\.gz/-bsp.tar.gz/g')" {} \;
-          find "${{ steps.base-folders.outputs.path }}/bsp" -type f -exec mv "{}" "$(dirname "{}")/$(basename "{}" | sed 's/-.*\.tar\.gz/-bsp.tar.gz/g')" {} \;
+          find "${{ steps.base-folders.outputs.path }}/examples" -type f -exec sh -c 'mv "{}" "$(dirname -- "{}")/$(basename -- "{}" | sed "s/-.*\.tar\.gz/-examples.tar.gz/g")"' \;
+          find "${{ steps.base-folders.outputs.path }}/bsp" -type f -exec sh -c 'mv "{}" "$(dirname -- "{}")/$(basename -- "{}" | sed "s/-.*\.tar\.gz/-bsp.tar.gz/g")"' \;
       - name: Upload Artifacts
         uses: actions/upload-artifact@v4
         with:
