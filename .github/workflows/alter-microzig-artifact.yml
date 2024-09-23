@@ -80,11 +80,18 @@ jobs:
       - name: Rename examples, bsp
         shell: bash
         run: |
-          sudo apt-get install rename
-          cd ${{ steps.base-folders.outputs.path }}/examples
-          rename 's/-.*\.tar\.gz/-examples.tar.gz/g' *.tar.gz
-          cd ${{ steps.base-folders.outputs.path }}/bsp
-          rename 's/-.*\.tar\.gz/-bsp.tar.gz/g' *.tar.gz
+          # The find command just gets a list of the files. We use this over a
+          # * to prevent unwanted globbing and to handle potential whitespace
+          # in names
+          for f in "$(find ${{ steps.base-folders.outputs.path }}/examples -type f)"; do
+            # This renames only the filename portion of the file while leaving
+            # the directory portion alone
+            mv $f "$(dirname $f)/$(sed 's/-.*\.tar\.gz/-examples.tar.gz/g' <<< $(basename $f))"
+          done
+          # This is the same as above but for bsp
+          for f in "$(find ${{ steps.base-folders.outputs.path }}/bsp -type f)"; do
+            mv $f "$(dirname $f)/$(sed 's/-.*\.tar\.gz/-bsp.tar.gz/g' <<< $(basename $f))"
+          done
       - name: Upload Artifacts
         uses: actions/upload-artifact@v4
         with:
