@@ -81,8 +81,10 @@ jobs:
         shell: bash
         run: |
           sudo apt-get install rename
-          rename 's/-.*\.tar\.gz/-examples.tar.gz/g' ${{ steps.get-glob-paths.outputs.output-path }}/examples/*
-          rename 's/-.*\.tar\.gz/-bsp.tar.gz/g' ${{ steps.get-glob-paths.outputs.output-path }}/bsp/*
+          cd ${{ steps.get-glob-paths.outputs.output-path }}/examples
+          rename 's/-.*\.tar\.gz/-examples.tar.gz/g' *.tar.gz
+          cd ${{ steps.get-glob-paths.outputs.output-path }}/bsp
+          rename 's/-.*\.tar\.gz/-bsp.tar.gz/g' *.tar.gz
       - name: Upload Artifacts
         uses: actions/upload-artifact@v4
         with:
