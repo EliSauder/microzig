@@ -177,7 +177,7 @@ jobs:
         run: |
           if [[ ! -z "${{ inputs.artifact-output-path }}" ]] \
                 && test -n "$(find . -maxdepth 1 \
-                                -name '${{ inputs.artifact-output-paths }}' \
+                                -name '${{ inputs.artifact-output-path }}' \
                                 -print -quit)"; then
             echo "SHOULD_UPLOAD=true" >> $GITHUB_OUTPUT; 
           else
