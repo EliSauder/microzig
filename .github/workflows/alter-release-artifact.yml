@@ -1,0 +1,88 @@
+name: Reusasble Alter Microzig Artifact
+
+on:
+  workflow_call:
+    inputs:
+      in-gh-artifact-name:
+        required: true
+        type: string
+        description: The github artifact to download the artifact from.
+      out-gh-artifact-name:
+        required: true
+        type: string
+        description: The github artifact to upload to
+      source-path:
+        required: false
+        type: string
+        default: ""
+        description: |
+          The path within the github artifact where the artifact is located at
+      artifact-name:
+        required: true
+        type: string
+        description: The name of the thing being released (e.g. regz)
+      zig-version:
+        required: true
+        type: string
+        description: The zig version to use.
+      artifact-version:
+        required: true
+        type: string
+        description: The microzig version to use
+      files-ignore:
+        required: false
+        type: string
+        description: A line delimited list of globs to ignore
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      # Download the requested github artifact
+      - name: Download artifacts
+        id: download
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{ inputs.in-gh-artifact-name }}
+      # Get the path to where the artifact is at. This is the path to the
+      # downloaded artifact that is relative to the github workspace with the
+      # source-path parameter tacked on the end.
+      - name: Get Source Path
+        shell: bash
+        id: get-source-path
+        run: |
+          echo "path=$( \
+            realpath -s --relative-to="${{ github.workspace }}" \
+            "${{ steps.download.outputs.download-path }}/${{ inputs.source-path }}" \
+            )" >> $GITHUB_OUTPUT
+      - name: Create base folder structure
+        shell: bash
+        id: base-folders
+        run: |
+          mkdir ./output
+          mkdir "./output/zig-${{ inputs.zig-version }}/"
+          mkdir "./output/zig-${{ inputs.zig-version }}/${{ inputs.artifact-name }}-${{ inputs.microzig-version }}/"
+          echo "path=./output/zig-${{ inputs.zig-version }}/${{ inputs.artifact-name }}-${{ inputs.microzig-version }}/" >> $GITHUB_OUTPUT
+      - name: Get glob safe base paths
+        id: get-glob-paths
+        shell: bash
+        run: |
+          echo "source-path=$(printf "%q" "${{ steps.get-source-path.outputs.path }}")" >> $GITHUB_OUTPUT
+          echo "output-path=$(printf "%q" "${{ steps.base-folders.outputs.path }}")" >> $GITHUB_OUTPUT
+      - name: Create ignore list file
+        shell: bash
+        run: |
+          echo "${{ inputs.files-ignore }}" > ignore-list.txt
+          echo ".git" >> ignore-list.txt
+          echo ".zig-cache" >> ignore-list.txt
+      - name: Move/Rename binaries
+        shell: bash
+        run: |
+          find "${{ steps.get-source-path.outputs.path }}" -type f \
+            | grep -vf ignore-list.txt | xargs -I % \
+            sh -c 'mv "%" "${{ steps.base-folders.outputs.path }}/${{ inputs.artifact-name }}-$(basename "$(dirname "%")").${"$(basename "%")"##*.}"'
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ inputs.out-gh-artifact-name }}
+          path: "./output/"

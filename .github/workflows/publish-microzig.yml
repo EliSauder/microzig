@@ -52,3 +52,40 @@ jobs:
       host: ${{ secrets.DEPLOY_MZ_HOST }}
       port: ${{ secrets.DEPLOY_MZ_PORT }}
       user: ${{ secrets.DEPLOY_MZ_USER }}
+  release-regz:
+    uses: ./.github/workflows/build-base.yml
+    with:
+      zig-version: ${{ vars.MZ_TARGET_ZIG_VERSION }}
+      get-submodules: true
+      is-packaged: false
+      target-os: Linux
+      zig-args: release-regz
+      github-artifact-name: release-regz
+      artifact-output-path: zig-out
+      ref: ${{ github.ref_name }}
+  release-uf2:
+    uses: ./.github/workflows/build-base.yml
+    with:
+      zig-version: ${{ vars.MZ_TARGET_ZIG_VERSION }}
+      get-submodules: true
+      is-packaged: false
+      target-os: Linux
+      zig-args: release-regz
+      github-artifact-name: release-uf2
+      artifact-output-path: zig-out
+      ref: ${{ github.ref_name }}
+  alter-regz:
+    uses:
+  publish-regz:
+    uses: ./.github/workflows/publish-base.yml
+    needs: release-regz
+    with:
+      tag: ${{ github.ref_name }}
+      github-artifact-name: release-regz-alt
+      source-path: /
+    secrets:
+      target-path: ${{ secrets.DEPLOY_MZ_ROOT_DATA_PATH }}
+      ssh-key: ${{ secrets.DEPLOY_MZ_PRIVATE_KEY }}
+      host: ${{ secrets.DEPLOY_MZ_HOST }}
+      port: ${{ secrets.DEPLOY_MZ_PORT }}
+      user: ${{ secrets.DEPLOY_MZ_USER }}
