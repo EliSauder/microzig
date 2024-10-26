@@ -31,13 +31,19 @@ on:
         default: ""
         description: |
           The path within the github artifact where the artifact is located at
-    secrets:
-      # The target path within the host share to save files to
       target-path:
         required: true
+        type: string
         description: |
           The path within the host machine where the data should be published
           to.
+    secrets:
+      # The target path within the host share to save files to
+      #target-path:
+      #  required: true
+      #  description: |
+      #    The path within the host machine where the data should be published
+      #    to.
       ssh-key:
         required: true
         description: The ssh private key that is used to publish to the host.
@@ -92,7 +98,7 @@ jobs:
           REMOTE_HOST: ${{ secrets.host }}
           REMOTE_USER: ${{ secrets.user }}
           REMOTE_PORT: ${{ secrets.port }}
-          TARGET: ${{ secrets.target-path }}/${{ inputs.target-artifact-path }}
+          TARGET: ${{ inputs.target-path }}/${{ inputs.target-artifact-path }}
       # Create the release draft on GitHub.
       - name: Create Release Draft
         if: ${{ startsWith(github.ref, 'refs/tags/') && endsWith(github.ref, inputs.tag) }}
