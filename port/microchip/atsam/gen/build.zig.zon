@@ -1,0 +1,17 @@
+.{
+    .name = .gen_code,
+
+    .version = "0.0.0",
+
+    .fingerprint = 0xb86ecc3d0ad81252,
+
+    .dependencies = .{
+        .@"microzig/build-internals" = .{ .path = "../../../../build-internals" },
+    },
+
+    .paths = .{
+        "build.zig",
+        "build.zig.zon",
+        "src",
+    },
+}

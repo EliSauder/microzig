@@ -1,50 +1,28 @@
 const std = @import("std");
-const microzig = @import("microzig/build-internals");
-
-const Self = @This();
-
-chips: struct {
-    atsamd51j19: *const microzig.Target,
-},
-
-boards: struct {},
-
-pub fn init(dep: *std.Build.Dependency) Self {
-    const b = dep.builder;
-
-    const chip_atsamd51j19: microzig.Target = .{
-        .dep = dep,
-        .preferred_binary_format = .elf,
-        .chip = .{
-            .name = "ATSAMD51J19A",
-            .url = "https://www.microchip.com/en-us/product/ATSAMD51J19A",
-            .cpu = .{
-                .cpu_arch = .thumb,
-                .cpu_model = .{ .explicit = &std.Target.arm.cpu.cortex_m4 },
-                .cpu_features_add = std.Target.arm.featureSet(&.{.vfp4d16sp}),
-                .os_tag = .freestanding,
-                .abi = .eabihf,
-            },
-            .register_definition = .{
-                .atdf = b.path("src/chips/ATSAMD51J19A.atdf"),
-            },
-            .memory_regions = &.{
-                .{ .kind = .flash, .offset = 0x00000000, .length = 512 * 1024 }, // Embedded Flash
-                .{ .kind = .ram, .offset = 0x20000000, .length = 192 * 1024 }, // Embedded SRAM
-                .{ .kind = .ram, .offset = 0x47000000, .length = 8 * 1024 }, // Backup SRAM
-                .{ .kind = .flash, .offset = 0x00804000, .length = 512 }, // NVM User Row
-            },
-        },
-    };
-
-    return .{
-        .chips = .{
-            .atsamd51j19 = chip_atsamd51j19.derive(.{}),
-        },
-        .boards = .{},
-    };
-}
+// const microzig = @import("microzig/build-internals");
+// .@"microzig/build-internals" = .{ .path = "../../../build-internals" },
 
 pub fn build(b: *std.Build) void {
-    _ = b.step("test", "Run platform agnostic unit tests");
+    const build_internals_dep = b.dependency("microzig/build-internals", .{});
+    const bi_mod = build_internals_dep.module("build-internals");
+    const regzdep = b.dependency("regz", .{}).module("regz");
+    const uf2dep = b.dependency("uf2", .{}).module("uf2");
+    bi_mod.addImport("regz", regzdep);
+    bi_mod.addImport("uf2", uf2dep);
+
+    const gen_code = b.addExecutable(.{
+        .name = "gen_code",
+        .root_source_file = b.path("gen/get_chips.zig"),
+        .target = b.graph.host,
+    });
+    gen_code.root_module.addImport("microzig/build-internals", build_internals_dep.module("build-internals"));
+    b.installArtifact(gen_code);
+
+    const gen_code_step = b.addRunArtifact(gen_code);
+    gen_code_step.addDirectoryArg(b.path("src/chips/"));
+    const gen_code_output = gen_code_step.addOutputFileArg("gen.zig");
+
+    const mod = b.addModule("atsam", .{
+        .root_source_file = gen_code_output,
+    });
 }
